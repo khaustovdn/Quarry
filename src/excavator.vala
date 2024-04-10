@@ -26,6 +26,15 @@ namespace Quarry {
             Object(is_loaded: false);
         }
 
-        public void load_dump_truck() {}
+        public void load_dump_truck(DumpTruck truck) {
+            if (truck.is_loaded) {
+                print("Dump truck is already loaded. Cannot load again.\n");
+                return;
+            }
+
+            Thread.usleep(1 * (ulong) Math.pow(10, 6));
+
+            truck.is_loaded = true;
+        }
     }
 }

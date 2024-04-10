@@ -28,7 +28,9 @@ namespace Quarry {
         construct {
             Excavator excavator = new Excavator ();
             DumpTruck dump_truck = new DumpTruck ();
-            excavator.load_dump_truck ();
+            excavator.load_dump_truck (dump_truck);
+            excavator.load_dump_truck (dump_truck);
+            excavator.load_dump_truck (dump_truck);
         }
     }
 }

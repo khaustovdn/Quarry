@@ -25,5 +25,23 @@ namespace Quarry {
         public DumpTruck () {
             Object (is_loaded: false);
         }
+
+        public void run_to_crusher () {
+            if (!is_loaded) {
+                print ("Dump truck is not loaded.\n");
+                return;
+            }
+
+            Thread.usleep (1 * (ulong) Math.pow (10, 6));
+        }
+
+        public void run_to_excavator () {
+            if (is_loaded) {
+                print ("Dump truck is not unloaded.\n");
+                return;
+            }
+
+            Thread.usleep (1 * (ulong) Math.pow (10, 6));
+        }
     }
 }

@@ -1,4 +1,4 @@
-/* window.vala
+/* dump-truck.vala
  *
  * Copyright 2024 khaustov
  *
@@ -19,16 +19,11 @@
  */
 
 namespace Quarry {
-    [GtkTemplate (ui = "/io/github/Quarry/window.ui")]
-    public class Window : Adw.ApplicationWindow {
-        public Window (Gtk.Application app) {
-            Object (application: app);
-        }
+    public class DumpTruck : Object {
+        public bool is_loaded { get; set; }
 
-        construct {
-            Excavator excavator = new Excavator ();
-            DumpTruck dump_truck = new DumpTruck ();
-            excavator.load_dump_truck ();
+        public DumpTruck () {
+            Object (is_loaded: false);
         }
     }
 }

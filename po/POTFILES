@@ -1,0 +1,6 @@
+data/io.github.Quarry.desktop.in
+data/io.github.Quarry.metainfo.xml.in
+data/io.github.Quarry.gschema.xml
+src/main.vala
+src/window.vala
+src/window.ui

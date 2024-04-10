@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=quarry
+Exec=quarry
+Icon=io.github.Quarry
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

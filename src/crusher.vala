@@ -1,4 +1,4 @@
-/* window.vala
+/* crusher.vala
  *
  * Copyright 2024 khaustov
  *
@@ -19,20 +19,22 @@
  */
 
 namespace Quarry {
-    [GtkTemplate (ui = "/io/github/Quarry/window.ui")]
-    public class Window : Adw.ApplicationWindow {
-        public Window (Gtk.Application app) {
-            Object (application: app);
+    public class Crusher : Object {
+        public bool is_loaded { get; set; }
+
+        public Crusher() {
+            Object(is_loaded: false);
         }
 
-        construct {
-            Excavator excavator = new Excavator ();
-            DumpTruck dump_truck = new DumpTruck ();
-            Crusher crusher = new Crusher ();
-            excavator.load_dump_truck (dump_truck);
-            dump_truck.run_to_crusher ();
-            crusher.unload_dump_truck (dump_truck);
-            crusher.unload_dump_truck (dump_truck);
+        public void unload_dump_truck(DumpTruck truck) {
+            if (!truck.is_loaded) {
+                print("Dump truck is already unloaded. Cannot unload again.\n");
+                return;
+            }
+
+            Thread.usleep(1 * (ulong) Math.pow(10, 6));
+
+            truck.is_loaded = false;
         }
     }
 }

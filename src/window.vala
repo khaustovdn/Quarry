@@ -20,7 +20,10 @@
 
 namespace Quarry {
     [GtkTemplate (ui = "/io/github/Quarry/window.ui")]
-    public class Window : Adw.ApplicationWindow {
+    public class Window : Adw.PreferencesWindow {
+        [GtkChild]
+        public unowned Adw.SpinRow timer;
+
         public Window (Gtk.Application app) {
             Object (application: app);
         }
@@ -29,10 +32,6 @@ namespace Quarry {
             Excavator excavator = new Excavator ();
             DumpTruck dump_truck = new DumpTruck ();
             Crusher crusher = new Crusher ();
-            excavator.load_dump_truck (dump_truck);
-            dump_truck.run_to_crusher ();
-            crusher.unload_dump_truck (dump_truck);
-            crusher.unload_dump_truck (dump_truck);
         }
     }
 }

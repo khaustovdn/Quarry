@@ -32,11 +32,11 @@
                   <class name="boxed-list" />
                 </style>
                 <child>
-                  <object class="AdwSpinRow" id="timer">
+                  <object class="AdwSpinRow" id="timer_spin_row">
                     <property name="title">Timer</property>
                     <property name="adjustment">
                       <object class="GtkAdjustment">
-                        <property name="lower">1</property>
+                        <property name="lower">0</property>
                         <property name="upper">10</property>
                         <property name="value">1</property>
                         <property name="step-increment">1</property>
@@ -49,7 +49,7 @@
             <child>
               <object class="AdwPreferencesGroup">
                 <child>
-                  <object class="GtkButton" id="custom_button">
+                  <object class="GtkButton" id="simulate_button">
                     <property name="label" translatable="true">Simulate</property>
                     <property name="halign">center</property>
                     <style>

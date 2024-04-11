@@ -10,6 +10,7 @@ quarry_sources = [
 quarry_deps = [
   dependency('gtk4'),
   dependency('libadwaita-1', version: '>= 1.4'),
+  dependency('gee-0.8'),
 ]
 
 quarry_sources += gnome.compile_resources(

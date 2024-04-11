@@ -21,9 +21,10 @@
 namespace Quarry {
     public class Excavator : Object {
         public bool is_loaded { get; set; }
+        public Gee.ArrayList<DumpTruck> truck_list { get; construct; }
 
         public Excavator() {
-            Object(is_loaded: false);
+            Object(is_loaded: false, truck_list: new Gee.ArrayList<DumpTruck> ());
         }
 
         public void load_dump_truck(DumpTruck truck) {
@@ -34,6 +35,7 @@ namespace Quarry {
 
             Thread.usleep(1 * (ulong) Math.pow(10, 6));
 
+            truck_list.remove(truck);
             truck.is_loaded = true;
         }
     }

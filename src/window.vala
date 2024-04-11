@@ -31,17 +31,49 @@ namespace Quarry {
         }
 
         construct {
-            Excavator excavator = new Excavator ();
-            DumpTruck dump_truck = new DumpTruck ();
-            Crusher crusher = new Crusher ();
-            simulate_button.clicked.connect (simulate);
+            simulate_button.clicked.connect (() => {
+                if (!Thread.supported ()) {
+                    stderr.printf ("Cannot run without threads.\n");
+                    return;
+                }
+
+                try {
+                    Thread<void> thread = new Thread<void> ("simulate", simulate);
+                } catch (ThreadError e) {
+                    return;
+                }
+            });
         }
 
-        public void simulate (Gtk.Button sender) {
+        public void simulate () {
             var timer = timer_spin_row.value;
+
+            Excavator excavator = new Excavator ();
+
+            excavator.truck_list.add_all_array ({ new DumpTruck (), new DumpTruck (), new DumpTruck () });
+
+            Crusher crusher = new Crusher ();
 
             while (timer > 0) {
                 print ("value: %s\n", timer.to_string ());
+
+
+                var truck = new DumpTruck ();
+
+                if (excavator.truck_list.size > 0) {
+                    truck = excavator.truck_list.first ();
+                    excavator.load_dump_truck (truck);
+                }
+
+                truck.run_to_crusher (crusher);
+
+                if (crusher.truck_list.size > 0) {
+                    truck = crusher.truck_list.first ();
+                    crusher.unload_dump_truck (truck);
+                }
+
+                truck.run_to_excavator (excavator);
+
                 timer -= 1;
             }
         }

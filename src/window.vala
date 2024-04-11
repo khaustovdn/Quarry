@@ -20,7 +20,9 @@
 
 namespace Quarry {
     [GtkTemplate (ui = "/io/github/Quarry/window.ui")]
-    public class Window : Adw.PreferencesWindow {
+    public class Window : Adw.ApplicationWindow {
+        [GtkChild]
+        public unowned Gtk.Box simulation_box;
         [GtkChild]
         public unowned Adw.SpinRow timer_spin_row;
         [GtkChild]
@@ -36,17 +38,20 @@ namespace Quarry {
                     stderr.printf ("Cannot run without threads.\n");
                     return;
                 }
-
                 try {
-                    Thread<void> thread = new Thread<void> ("simulate", simulate);
+                    var thread = new Thread<void> ("simulate", () => {
+                        simulation_box.set_sensitive (false);
+                        simulate ();
+                        simulation_box.set_sensitive (true);
+                    });
                 } catch (ThreadError e) {
-                    return;
+                    printerr ("Error: %s\n", e.message);
                 }
             });
         }
 
         public void simulate () {
-            var timer = timer_spin_row.value;
+            var timer = timer_spin_row.adjustment.value;
 
             Excavator excavator = new Excavator ();
 

@@ -39,7 +39,7 @@ namespace Quarry {
         }
 
         public async void simulate () {
-            var timer = timer_spin_row.adjustment.value;
+            int timer = (int) timer_spin_row.adjustment.value;
 
             Excavator excavator = new Excavator ();
 
@@ -48,25 +48,23 @@ namespace Quarry {
             Crusher crusher = new Crusher ();
 
             while (timer > 0) {
-                print ("value: %s\n", timer.to_string ());
-
-                var truck = new DumpTruck ();
-
-                if (excavator.truck_list.size > 0) {
-                    truck = excavator.truck_list.first ();
-                    excavator.load_dump_truck (truck);
+                print ("time %d\n", timer);
+                if (!excavator.is_free) {
+                    if (excavator.time > 0) {
+                        print ("excavator time %d\n", excavator.time);
+                        excavator.time--;
+                    } else {
+                        excavator.is_free = true;
+                    }
                 }
 
-                truck.run_to_crusher (crusher);
-
-                if (crusher.truck_list.size > 0) {
-                    truck = crusher.truck_list.first ();
-                    crusher.unload_dump_truck (truck);
+                if (excavator.is_free && !excavator.truck_list.is_empty) {
+                    excavator.is_free = false;
+                    excavator.load_dump_truck (excavator.truck_list.first ());
+                    print ("load truck %d\n", excavator.truck_list.size);
                 }
 
-                truck.run_to_excavator (excavator);
-
-                timer -= 1;
+                timer--;
 
                 Idle.add (simulate.callback);
                 yield;

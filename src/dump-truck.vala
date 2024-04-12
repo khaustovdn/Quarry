@@ -20,10 +20,11 @@
 
 namespace Quarry {
     public class DumpTruck : Object {
-        public bool is_loaded { get; set; }
+        public bool is_loaded { get; set; default = false; }
+        public int time { get; set; default = 0; }
 
         public DumpTruck () {
-            Object (is_loaded: false);
+            Object ();
         }
 
         public void run_to_crusher (Crusher crusher) {
@@ -32,6 +33,7 @@ namespace Quarry {
                 return;
             }
 
+            time = 2;
             crusher.truck_list.add (this);
         }
 
@@ -41,6 +43,7 @@ namespace Quarry {
                 return;
             }
 
+            time = 2;
             excavator.truck_list.add (this);
         }
     }

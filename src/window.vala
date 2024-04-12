@@ -41,28 +41,29 @@ namespace Quarry {
         public async void simulate () {
             int timer = (int) timer_spin_row.adjustment.value;
 
-            Excavator excavator = new Excavator ();
+            Excavator excavator = new Excavator (true, 0, new Gee.ArrayList<DumpTruck> ());
+            Crusher crusher = new Crusher (true, 0, new Gee.ArrayList<DumpTruck> ());
 
-            excavator.truck_list.add_all_array ({ new DumpTruck (), new DumpTruck (), new DumpTruck () });
+            Gee.ArrayList<DumpTruck> truck_list = new Gee.ArrayList<DumpTruck>.wrap ({
+                new DumpTruck (false, false, 0, excavator),
+                new DumpTruck (false, false, 0, excavator),
+                new DumpTruck (false, false, 0, excavator),
+            });
 
-            Crusher crusher = new Crusher ();
+            foreach (var truck in truck_list) {
+                if (excavator == truck.excavator) {
+                    excavator.truck_list.add (truck);
+                }
+            }
 
             while (timer > 0) {
                 print ("time %d\n", timer);
-                if (!excavator.is_free) {
-                    if (excavator.time > 0) {
-                        print ("excavator time %d\n", excavator.time);
-                        excavator.time--;
-                    } else {
-                        excavator.is_free = true;
-                    }
+
+                foreach (var truck in truck_list) {
+                    truck.update (crusher);
                 }
 
-                if (excavator.is_free && !excavator.truck_list.is_empty) {
-                    excavator.is_free = false;
-                    excavator.load_dump_truck (excavator.truck_list.first ());
-                    print ("load truck %d\n", excavator.truck_list.size);
-                }
+                excavator.update ();
 
                 timer--;
 

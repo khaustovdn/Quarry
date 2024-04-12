@@ -20,22 +20,40 @@
 
 namespace Quarry {
     public class Excavator : Object {
-        public bool is_free { get; set; default = true; }
-        public int time { get; set; default = 0; }
-        public Gee.ArrayList<DumpTruck> truck_list { get; default = new Gee.ArrayList<DumpTruck> (); }
+        public bool is_free { get; set; }
+        public int time { get; set; }
+        public Gee.ArrayList<DumpTruck> truck_list { get; construct; }
 
-        public Excavator() {
-            Object();
+        public Excavator (bool is_free, int time, Gee.ArrayList<DumpTruck> truck_list) {
+            Object (is_free: is_free, time: time, truck_list: truck_list);
         }
 
-        public void load_dump_truck(DumpTruck truck) {
+        public void update () {
+            if (!is_free) {
+                if (time > 0) {
+                    print ("excavator time %d\n", time);
+                    time--;
+                } else {
+                    is_free = true;
+                }
+            }
+
+            if (is_free && !truck_list.is_empty) {
+                load_dump_truck (truck_list.first ());
+                print ("load truck %d\n", truck_list.size);
+            }
+        }
+
+        private void load_dump_truck (DumpTruck truck) {
             if (truck.is_loaded) {
-                print("Dump truck is already loaded. Cannot load again.\n");
+                print ("Dump truck is already loaded. Cannot load again.\n");
                 return;
             }
 
-            time = 2;
-            truck_list.remove(truck);
+            this.time = 2;
+            this.is_free = this.time == 0;
+
+            this.truck_list.remove (truck);
             truck.is_loaded = true;
         }
     }

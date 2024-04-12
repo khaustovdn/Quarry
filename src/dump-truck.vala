@@ -20,11 +20,29 @@
 
 namespace Quarry {
     public class DumpTruck : Object {
-        public bool is_loaded { get; set; default = false; }
-        public int time { get; set; default = 0; }
+        public bool is_loaded { get; set; }
+        public bool is_on_the_way { get; set; }
+        public int time { get; set; }
+        public Excavator excavator { get; construct; }
 
-        public DumpTruck () {
-            Object ();
+        public DumpTruck (bool is_loaded, bool is_on_the_way, int time, Excavator excavator) {
+            Object (is_loaded: is_loaded, is_on_the_way: is_on_the_way, time: time, excavator: excavator);
+        }
+
+        public void update (Crusher crusher) {
+            if (is_on_the_way) {
+                if (time > 0) {
+                    time--;
+                } else {
+                    is_on_the_way = false;
+                }
+            } else if (!excavator.truck_list.contains (this) && !crusher.truck_list.contains (this)) {
+                if (is_loaded) {
+                    run_to_crusher (crusher);
+                } else {
+                    run_to_excavator (excavator);
+                }
+            }
         }
 
         public void run_to_crusher (Crusher crusher) {
@@ -33,7 +51,9 @@ namespace Quarry {
                 return;
             }
 
-            time = 2;
+            this.time = 2;
+            this.is_on_the_way = this.time > 0;
+
             crusher.truck_list.add (this);
         }
 
@@ -43,7 +63,9 @@ namespace Quarry {
                 return;
             }
 
-            time = 2;
+            this.time = 2;
+            this.is_on_the_way = this.time > 0;
+
             excavator.truck_list.add (this);
         }
     }

@@ -32,8 +32,6 @@ namespace Quarry {
                 return;
             }
 
-            Thread.usleep (1 * (ulong) Math.pow (10, 6));
-
             crusher.truck_list.add (this);
         }
 
@@ -42,8 +40,6 @@ namespace Quarry {
                 print ("Dump truck is not unloaded.\n");
                 return;
             }
-
-            Thread.usleep (1 * (ulong) Math.pow (10, 6));
 
             excavator.truck_list.add (this);
         }

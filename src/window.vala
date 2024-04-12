@@ -34,23 +34,11 @@ namespace Quarry {
 
         construct {
             simulate_button.clicked.connect (() => {
-                if (!Thread.supported ()) {
-                    stderr.printf ("Cannot run without threads.\n");
-                    return;
-                }
-                try {
-                    var thread = new Thread<void> ("simulate", () => {
-                        simulation_box.set_sensitive (false);
-                        simulate ();
-                        simulation_box.set_sensitive (true);
-                    });
-                } catch (ThreadError e) {
-                    printerr ("Error: %s\n", e.message);
-                }
+                simulate.begin ();
             });
         }
 
-        public void simulate () {
+        public async void simulate () {
             var timer = timer_spin_row.adjustment.value;
 
             Excavator excavator = new Excavator ();
@@ -61,7 +49,6 @@ namespace Quarry {
 
             while (timer > 0) {
                 print ("value: %s\n", timer.to_string ());
-
 
                 var truck = new DumpTruck ();
 
@@ -80,6 +67,9 @@ namespace Quarry {
                 truck.run_to_excavator (excavator);
 
                 timer -= 1;
+
+                Idle.add (simulate.callback);
+                yield;
             }
         }
     }

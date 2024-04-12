@@ -33,8 +33,6 @@ namespace Quarry {
                 return;
             }
 
-            Thread.usleep(1 * (ulong) Math.pow(10, 6));
-
             truck_list.remove(truck);
             truck.is_loaded = true;
         }

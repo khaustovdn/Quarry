@@ -40,10 +40,9 @@
                         <property name="title" translatable="true">Spin Row</property>
                         <property name="adjustment">
                           <object class="GtkAdjustment">
-                            <property name="lower">0</property>
+                            <property name="lower">1</property>
                             <property name="upper">100</property>
-                            <property name="value">50</property>
-                            <property name="page-increment">10</property>
+                            <property name="value">5</property>
                             <property name="step-increment">1</property>
                           </object>
                         </property>

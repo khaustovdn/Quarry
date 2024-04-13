@@ -20,12 +20,11 @@
 
 namespace Quarry {
     public class Crusher : Object {
-        public bool is_free { get; set; }
         public int time { get; set; }
         public Gee.ArrayList<DumpTruck> truck_list { get; construct; }
 
-        public Crusher(bool is_free, int time, Gee.ArrayList<DumpTruck> truck_list) {
-            Object(is_free: is_free, time: time, truck_list: truck_list);
+        public Crusher(int time, Gee.ArrayList<DumpTruck> truck_list) {
+            Object(time: time, truck_list: truck_list);
         }
 
         public void unload_dump_truck(DumpTruck truck) {
@@ -35,9 +34,6 @@ namespace Quarry {
             }
 
             this.time = 2;
-            this.is_free = this.time == 0;
-
-            this.truck_list.remove(truck);
             truck.is_loaded = false;
         }
     }

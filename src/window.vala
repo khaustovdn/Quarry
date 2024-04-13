@@ -41,8 +41,8 @@ namespace Quarry {
         public async void simulate () {
             int timer = (int) timer_spin_row.adjustment.value;
 
-            Excavator excavator = new Excavator (true, 0, new Gee.ArrayList<DumpTruck> ());
-            Crusher crusher = new Crusher (true, 0, new Gee.ArrayList<DumpTruck> ());
+            Excavator excavator = new Excavator (0, new Gee.ArrayList<DumpTruck> ());
+            Crusher crusher = new Crusher (0, new Gee.ArrayList<DumpTruck> ());
 
             Gee.ArrayList<DumpTruck> truck_list = new Gee.ArrayList<DumpTruck>.wrap ({
                 new DumpTruck (false, false, 0, excavator),

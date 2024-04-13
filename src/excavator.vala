@@ -20,26 +20,31 @@
 
 namespace Quarry {
     public class Excavator : Object {
-        public bool is_free { get; set; }
         public int time { get; set; }
         public Gee.ArrayList<DumpTruck> truck_list { get; construct; }
 
-        public Excavator (bool is_free, int time, Gee.ArrayList<DumpTruck> truck_list) {
-            Object (is_free: is_free, time: time, truck_list: truck_list);
+        public Excavator (int time, Gee.ArrayList<DumpTruck> truck_list) {
+            Object (time: time, truck_list: truck_list);
         }
 
         public void update () {
-            if (!is_free) {
+            if (truck_list.is_empty)return;
+
+            var truck = truck_list.first ();
+
+            if (truck != null && truck.is_loaded) {
                 if (time > 0) {
                     print ("excavator time %d\n", time);
                     time--;
                 } else {
-                    is_free = true;
+                    truck_list.remove (truck);
+                    if (truck_list.is_empty)return;
+                    truck = truck_list.first ();
                 }
             }
 
-            if (is_free && !truck_list.is_empty) {
-                load_dump_truck (truck_list.first ());
+            if (!truck.is_loaded) {
+                load_dump_truck (truck);
                 print ("load truck %d\n", truck_list.size);
             }
         }
@@ -51,9 +56,6 @@ namespace Quarry {
             }
 
             this.time = 2;
-            this.is_free = this.time == 0;
-
-            this.truck_list.remove (truck);
             truck.is_loaded = true;
         }
     }

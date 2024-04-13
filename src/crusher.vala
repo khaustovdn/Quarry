@@ -23,18 +23,31 @@ namespace Quarry {
         public int time { get; set; }
         public Gee.ArrayList<DumpTruck> truck_list { get; construct; }
 
-        public Crusher(int time, Gee.ArrayList<DumpTruck> truck_list) {
-            Object(time: time, truck_list: truck_list);
+        public Crusher (int time, Gee.ArrayList<DumpTruck> truck_list) {
+            Object (time: time, truck_list: truck_list);
         }
 
-        public void unload_dump_truck(DumpTruck truck) {
-            if (!truck.is_loaded) {
-                print("Dump truck is already unloaded. Cannot unload again.\n");
-                return;
+        public void update () {
+            if (this.truck_list.is_empty)return;
+
+            if (truck_list.first ().load == Load.IN_PROGRESS) {
+                if (this.time > 0) {
+                    print ("crusher time %d\n", time);
+                    this.time--;
+                } else {
+                    this.truck_list.first ().load = Load.UNLOADED;
+                    this.truck_list.remove_at (0);
+                }
             }
 
-            this.time = 2;
-            truck.is_loaded = false;
+            if (this.truck_list.is_empty)return;
+
+            if (truck_list.first ().load == Load.LOADED && this.time == 0) {
+                print ("unloading the truck\n");
+                this.truck_list.first ().load = Load.IN_PROGRESS;
+                this.time = 2;
+                this.time --;
+            }
         }
     }
 }

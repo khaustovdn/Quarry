@@ -19,6 +19,14 @@
  */
 
 namespace Quarry {
+    public int count = 0;
+
+    public enum Load {
+        LOADED,
+        UNLOADED,
+        IN_PROGRESS
+    }
+
     public class Application : Adw.Application {
         public Application () {
             Object (application_id: "io.github.Quarry", flags: ApplicationFlags.DEFAULT_FLAGS);
@@ -31,7 +39,7 @@ namespace Quarry {
                 { "quit", this.quit }
             };
             this.add_action_entries (action_entries, this);
-            this.set_accels_for_action ("app.quit", {"<primary>q"});
+            this.set_accels_for_action ("app.quit", { "<primary>q" });
         }
 
         public override void activate () {

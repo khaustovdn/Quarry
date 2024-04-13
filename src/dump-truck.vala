@@ -20,53 +20,33 @@
 
 namespace Quarry {
     public class DumpTruck : Object {
-        public bool is_loaded { get; set; }
-        public bool is_on_the_way { get; set; }
+        public Load load { get; set; }
         public int time { get; set; }
         public Excavator excavator { get; construct; }
+        public Crusher crusher { get; construct; }
 
-        public DumpTruck (bool is_loaded, bool is_on_the_way, int time, Excavator excavator) {
-            Object (is_loaded: is_loaded, is_on_the_way: is_on_the_way, time: time, excavator: excavator);
+        public DumpTruck (Load load, int time, Excavator excavator, Crusher crusher) {
+            Object (load: load, time: time, excavator: excavator, crusher: crusher);
         }
 
-        public void update (Crusher crusher) {
-            if (is_on_the_way) {
+        public void update () {
+            if (this.load != Load.IN_PROGRESS) {
                 if (time > 0) {
+                    print ("run time %d\n", time);
                     time--;
-                } else {
-                    is_on_the_way = false;
+                    if (time == 0) {
+                        if (this.load == Load.LOADED) {
+                            crusher.truck_list.add (this);
+                        } else if (this.load == Load.UNLOADED) {
+                            excavator.truck_list.add (this);
+                        }
+                    }
+                } else if (!excavator.truck_list.contains (this) && !crusher.truck_list.contains (this)) {
+                    print ("running truck\n");
+                    this.time = 2;
+                    this.time --;
                 }
-            } else if (!excavator.truck_list.contains (this) && !crusher.truck_list.contains (this)) {
-                if (is_loaded) {
-                    run_to_crusher (crusher);
-                } else {
-                    run_to_excavator (excavator);
-                }
             }
-        }
-
-        public void run_to_crusher (Crusher crusher) {
-            if (!is_loaded) {
-                print ("Dump truck is not loaded.\n");
-                return;
-            }
-
-            this.time = 2;
-            this.is_on_the_way = this.time > 0;
-
-            crusher.truck_list.add (this);
-        }
-
-        public void run_to_excavator (Excavator excavator) {
-            if (is_loaded) {
-                print ("Dump truck is not unloaded.\n");
-                return;
-            }
-
-            this.time = 2;
-            this.is_on_the_way = this.time > 0;
-
-            excavator.truck_list.add (this);
         }
     }
 }

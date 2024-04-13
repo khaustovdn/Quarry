@@ -45,9 +45,7 @@ namespace Quarry {
             Crusher crusher = new Crusher (0, new Gee.ArrayList<DumpTruck> ());
 
             Gee.ArrayList<DumpTruck> truck_list = new Gee.ArrayList<DumpTruck>.wrap ({
-                new DumpTruck (false, false, 0, excavator),
-                new DumpTruck (false, false, 0, excavator),
-                new DumpTruck (false, false, 0, excavator),
+                new DumpTruck (Load.UNLOADED, 0, excavator, crusher),
             });
 
             foreach (var truck in truck_list) {
@@ -57,19 +55,23 @@ namespace Quarry {
             }
 
             while (timer > 0) {
-                print ("time %d\n", timer);
-
-                foreach (var truck in truck_list) {
-                    truck.update (crusher);
-                }
+                print ("\n\ntime %d\n", timer);
 
                 excavator.update ();
+                crusher.update ();
+
+                foreach (var truck in truck_list) {
+                    truck.update ();
+                }
 
                 timer--;
 
                 Idle.add (simulate.callback);
                 yield;
             }
+
+            print ("\n\n---%d---\n\n", count);
+            count = 0;
         }
     }
 }

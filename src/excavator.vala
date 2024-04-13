@@ -28,35 +28,27 @@ namespace Quarry {
         }
 
         public void update () {
-            if (truck_list.is_empty)return;
+            if (this.truck_list.is_empty)return;
 
-            var truck = truck_list.first ();
-
-            if (truck != null && truck.is_loaded) {
-                if (time > 0) {
+            if (truck_list.first ().load == Load.IN_PROGRESS) {
+                if (this.time > 0) {
                     print ("excavator time %d\n", time);
-                    time--;
+                    this.time--;
                 } else {
-                    truck_list.remove (truck);
-                    if (truck_list.is_empty)return;
-                    truck = truck_list.first ();
+                    this.truck_list.first ().load = Load.LOADED;
+                    this.truck_list.remove_at (0);
+                    count++;
                 }
             }
-
-            if (!truck.is_loaded) {
-                load_dump_truck (truck);
-                print ("load truck %d\n", truck_list.size);
+            
+            if (this.truck_list.is_empty)return;
+            
+            if (truck_list.first ().load == Load.UNLOADED && this.time == 0) {
+                print ("loading the truck\n");
+                this.truck_list.first ().load = Load.IN_PROGRESS;
+                this.time = 2;
+                this.time --;
             }
-        }
-
-        private void load_dump_truck (DumpTruck truck) {
-            if (truck.is_loaded) {
-                print ("Dump truck is already loaded. Cannot load again.\n");
-                return;
-            }
-
-            this.time = 2;
-            truck.is_loaded = true;
         }
     }
 }

@@ -25,8 +25,8 @@ namespace Quarry {
         }
 
         construct {
-            height_request = 294;
             width_request = 360;
+            height_request = 294;
 
             margin_bottom = 18;
             margin_top = 18;
@@ -36,11 +36,23 @@ namespace Quarry {
             set_draw_func (draw);
         }
 
-        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cr, int width, int height) {
+        private void draw_coordinate_axis (Gtk.DrawingArea drawing_area, Cairo.Context cr, int width, int height) {
+            for (int i = 0; i < width; i += 20) {
+                cr.set_line_width ((i == 20) ? 0.5 : 0.1);
+                cr.move_to (i, 0);
+                cr.line_to (i, height);
+                cr.stroke ();
+            }
+            for (int i = 0; i < height; i += 20) {
+                cr.set_line_width ((i + 20 > height) ? 0.5 : 0.1);
+                cr.move_to (0, i);
+                cr.line_to (width, i);
+                cr.stroke ();
+            }
+        }
 
-            // Rectangle:
-            cr.rectangle (0, 0, width, height);
-            cr.fill ();
+        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cr, int width, int height) {
+            draw_coordinate_axis (drawing_area, cr, width, height);
         }
     }
 }

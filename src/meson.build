@@ -5,6 +5,7 @@ quarry_sources = [
   'excavator.vala',
   'crusher.vala',
   'dump-truck.vala',
+  'charts.vala',
 ]
 
 quarry_deps = [

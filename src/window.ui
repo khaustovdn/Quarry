@@ -19,7 +19,7 @@
           </object>
         </child>
         <property name="content">
-          <object class="GtkBox" id="simulation_box">
+          <object class="GtkBox">
             <property name="orientation">vertical</property>
             <property name="spacing">18</property>
             <property name="margin-top">18</property>
@@ -30,7 +30,7 @@
               <object class="AdwClamp">
                 <property name="maximum-size">500</property>
                 <child>
-                  <object class="GtkListBox">
+                  <object class="GtkListBox" id="simulation_listbox">
                     <style>
                       <class name="boxed-list" />
                     </style>

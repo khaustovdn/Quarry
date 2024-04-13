@@ -22,7 +22,7 @@ namespace Quarry {
     [GtkTemplate (ui = "/io/github/Quarry/window.ui")]
     public class Window : Adw.ApplicationWindow {
         [GtkChild]
-        public unowned Gtk.Box simulation_box;
+        public unowned Gtk.ListBox simulation_listbox;
         [GtkChild]
         public unowned Adw.SpinRow timer_spin_row;
         [GtkChild]
@@ -33,6 +33,9 @@ namespace Quarry {
         }
 
         construct {
+            Charts charts = new Charts ();
+            simulation_listbox.append (charts);
+
             simulate_button.clicked.connect (() => {
                 simulate.begin ();
             });

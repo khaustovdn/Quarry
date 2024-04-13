@@ -25,34 +25,34 @@ namespace Quarry {
         }
 
         construct {
-            width_request = 360;
-            height_request = 294;
+            this.width_request = 360;
+            this.height_request = 294;
 
-            margin_bottom = 18;
-            margin_top = 18;
-            margin_start = 12;
-            margin_end = 12;
+            this.margin_bottom = 18;
+            this.margin_top = 18;
+            this.margin_start = 12;
+            this.margin_end = 12;
 
-            set_draw_func (draw);
+            this.set_draw_func (draw);
         }
 
-        private void draw_coordinate_axis (Gtk.DrawingArea drawing_area, Cairo.Context cr, int width, int height) {
+        private void draw_coordinate_axis (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             for (int i = 0; i < width; i += 20) {
-                cr.set_line_width ((i == 20) ? 0.5 : 0.1);
-                cr.move_to (i, 0);
-                cr.line_to (i, height);
-                cr.stroke ();
+                cairo.set_line_width ((i == 20) ? 0.5 : 0.1);
+                cairo.move_to (i, 0);
+                cairo.line_to (i, height);
+                cairo.stroke ();
             }
             for (int i = 0; i < height; i += 20) {
-                cr.set_line_width ((i + 20 > height) ? 0.5 : 0.1);
-                cr.move_to (0, i);
-                cr.line_to (width, i);
-                cr.stroke ();
+                cairo.set_line_width ((i + 20 > height) ? 0.5 : 0.1);
+                cairo.move_to (0, i);
+                cairo.line_to (width, i);
+                cairo.stroke ();
             }
         }
 
-        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cr, int width, int height) {
-            draw_coordinate_axis (drawing_area, cr, width, height);
+        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            draw_coordinate_axis (drawing_area, cairo, width, height);
         }
     }
 }

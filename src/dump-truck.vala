@@ -31,17 +31,17 @@ namespace Quarry {
 
         public void update () {
             if (this.load != Load.IN_PROGRESS) {
-                if (time > 0) {
-                    print ("run time %d\n", time);
-                    time--;
-                    if (time == 0) {
+                if (this.time > 0) {
+                    print ("run time %d\n", this.time);
+                    this.time--;
+                    if (this.time == 0) {
                         if (this.load == Load.LOADED) {
-                            crusher.truck_list.add (this);
+                            this.crusher.truck_list.add (this);
                         } else if (this.load == Load.UNLOADED) {
-                            excavator.truck_list.add (this);
+                            this.excavator.truck_list.add (this);
                         }
                     }
-                } else if (!excavator.truck_list.contains (this) && !crusher.truck_list.contains (this)) {
+                } else if (!this.excavator.truck_list.contains (this) && !this.crusher.truck_list.contains (this)) {
                     print ("running truck\n");
                     this.time = 2;
                     this.time--;

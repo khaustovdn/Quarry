@@ -30,9 +30,9 @@ namespace Quarry {
         public void update () {
             if (this.truck_list.is_empty)return;
 
-            if (truck_list.first ().load == Load.IN_PROGRESS) {
+            if (this.truck_list.first ().load == Load.IN_PROGRESS) {
                 if (this.time > 0) {
-                    print ("excavator time %d\n", time);
+                    print ("excavator time %d\n", this.time);
                     this.time--;
                 } else {
                     this.truck_list.first ().load = Load.LOADED;
@@ -42,7 +42,7 @@ namespace Quarry {
 
             if (this.truck_list.is_empty)return;
 
-            if (truck_list.first ().load == Load.UNLOADED && this.time == 0) {
+            if (this.truck_list.first ().load == Load.UNLOADED && this.time == 0) {
                 print ("loading the truck\n");
                 this.truck_list.first ().load = Load.IN_PROGRESS;
                 this.time = 2;

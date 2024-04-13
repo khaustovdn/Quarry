@@ -34,19 +34,19 @@ namespace Quarry {
 
         construct {
             Charts charts = new Charts ();
-            simulation_listbox.append (charts);
+            this.simulation_listbox.append (charts);
 
-            simulate_button.clicked.connect (() => {
+            this.simulate_button.clicked.connect (() => {
                 simulate.begin ();
             });
         }
 
         public async void simulate () {
-            int timer = (int) timer_spin_row.adjustment.value;
+            int timer = (int) this.timer_spin_row.adjustment.value;
 
-            Gee.ArrayList<DumpTruck> truck_list = new Gee.ArrayList<DumpTruck> ();
-            Crusher crusher = new Crusher (0, new Gee.ArrayList<DumpTruck> ());
-            Gee.ArrayList<Excavator> excavator_list = new Gee.ArrayList<Excavator>.wrap ({
+            var truck_list = new Gee.ArrayList<DumpTruck> ();
+            var crusher = new Crusher (0, new Gee.ArrayList<DumpTruck> ());
+            var excavator_list = new Gee.ArrayList<Excavator>.wrap ({
                 new Excavator (0, new Gee.ArrayList<DumpTruck> ()),
                 new Excavator (0, new Gee.ArrayList<DumpTruck> ()),
                 new Excavator (0, new Gee.ArrayList<DumpTruck> ())

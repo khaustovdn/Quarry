@@ -28,20 +28,27 @@ namespace Quarry {
         [GtkChild]
         public unowned Gtk.Button simulate_button;
 
+
+
         public Window (Gtk.Application app) {
             Object (application: app);
         }
 
         construct {
             Charts charts = new Charts ();
-            this.simulation_listbox.append (charts);
 
             this.simulate_button.clicked.connect (() => {
-                simulate.begin ();
+                charts.clear ();
+                simulate.begin (charts, (obj, res) => {
+                    simulate.end (res);
+                    charts.update ();
+                });
             });
+
+            simulation_listbox.append (charts);
         }
 
-        public async void simulate () {
+        public async void simulate (Charts charts) {
             int timer = (int) this.timer_spin_row.adjustment.value;
 
             var truck_list = new Gee.ArrayList<DumpTruck> ();
@@ -60,10 +67,12 @@ namespace Quarry {
                 }
             }
 
-            while (timer > 0) {
+            for (int i = 0; i < timer; i++) {
                 print ("\n\ntime %d\n", timer);
 
                 crusher.update ();
+
+                charts.series.add_point (i * 10, crusher.truck_list.size * 10);
 
                 foreach (var excavator in excavator_list) {
                     excavator.update ();
@@ -74,8 +83,6 @@ namespace Quarry {
                         }
                     }
                 }
-
-                timer--;
 
                 Idle.add (simulate.callback);
                 yield;

@@ -22,8 +22,16 @@ namespace Quarry {
     public class Series : Object {
         public Gee.ArrayList<Point> points { get; construct; }
 
-        public Series (Gee.ArrayList<Point> points) {
-            Object (points: points);
+        public Series () {
+            Object ();
+        }
+
+        construct {
+            this.points = new Gee.ArrayList<Point> ();
+        }
+
+        public void add_point (int x, int y) {
+            this.points.add (new Point (x, y));
         }
     }
 }

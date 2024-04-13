@@ -44,7 +44,7 @@ namespace Quarry {
                 } else if (!excavator.truck_list.contains (this) && !crusher.truck_list.contains (this)) {
                     print ("running truck\n");
                     this.time = 2;
-                    this.time --;
+                    this.time--;
                 }
             }
         }

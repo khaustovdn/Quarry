@@ -37,17 +37,16 @@ namespace Quarry {
                 } else {
                     this.truck_list.first ().load = Load.LOADED;
                     this.truck_list.remove_at (0);
-                    count++;
                 }
             }
-            
+
             if (this.truck_list.is_empty)return;
-            
+
             if (truck_list.first ().load == Load.UNLOADED && this.time == 0) {
                 print ("loading the truck\n");
                 this.truck_list.first ().load = Load.IN_PROGRESS;
                 this.time = 2;
-                this.time --;
+                this.time--;
             }
         }
     }

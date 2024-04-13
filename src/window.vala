@@ -41,15 +41,18 @@ namespace Quarry {
         public async void simulate () {
             int timer = (int) timer_spin_row.adjustment.value;
 
-            Excavator excavator = new Excavator (0, new Gee.ArrayList<DumpTruck> ());
+            Gee.ArrayList<DumpTruck> truck_list = new Gee.ArrayList<DumpTruck> ();
             Crusher crusher = new Crusher (0, new Gee.ArrayList<DumpTruck> ());
-
-            Gee.ArrayList<DumpTruck> truck_list = new Gee.ArrayList<DumpTruck>.wrap ({
-                new DumpTruck (Load.UNLOADED, 0, excavator, crusher),
+            Gee.ArrayList<Excavator> excavator_list = new Gee.ArrayList<Excavator>.wrap ({
+                new Excavator (0, new Gee.ArrayList<DumpTruck> ()),
+                new Excavator (0, new Gee.ArrayList<DumpTruck> ()),
+                new Excavator (0, new Gee.ArrayList<DumpTruck> ())
             });
 
-            foreach (var truck in truck_list) {
-                if (excavator == truck.excavator) {
+            foreach (var excavator in excavator_list) {
+                for (int i = 0; i < 3; i++) {
+                    var truck = new DumpTruck (Load.UNLOADED, 0, excavator, crusher);
+                    truck_list.add (truck);
                     excavator.truck_list.add (truck);
                 }
             }
@@ -57,11 +60,16 @@ namespace Quarry {
             while (timer > 0) {
                 print ("\n\ntime %d\n", timer);
 
-                excavator.update ();
                 crusher.update ();
 
-                foreach (var truck in truck_list) {
-                    truck.update ();
+                foreach (var excavator in excavator_list) {
+                    excavator.update ();
+
+                    foreach (var truck in truck_list) {
+                        if (truck.excavator == excavator) {
+                            truck.update ();
+                        }
+                    }
                 }
 
                 timer--;

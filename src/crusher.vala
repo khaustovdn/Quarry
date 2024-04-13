@@ -37,6 +37,7 @@ namespace Quarry {
                 } else {
                     this.truck_list.first ().load = Load.UNLOADED;
                     this.truck_list.remove_at (0);
+                    count++;
                 }
             }
 
@@ -46,7 +47,7 @@ namespace Quarry {
                 print ("unloading the truck\n");
                 this.truck_list.first ().load = Load.IN_PROGRESS;
                 this.time = 2;
-                this.time --;
+                this.time--;
             }
         }
     }

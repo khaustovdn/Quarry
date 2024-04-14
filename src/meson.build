@@ -8,6 +8,7 @@ quarry_sources = [
   'charts.vala',
   'series.vala',
   'point.vala',
+  'color.vala',
 ]
 
 quarry_deps = [

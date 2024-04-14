@@ -42,32 +42,45 @@ namespace Quarry {
             this.set_draw_func (draw);
         }
 
-        private void draw_coordinate_axis (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            var x = 0, y = 0;
+        private void draw_axis (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            cairo.set_line_width (0.5);
 
-            for (int i = 0; i < width; i += 20) {
-                cairo.set_line_width ((i == 20) ? 0.5 : 0.1);
-                x = (i == 20) ? i : x;
+            cairo.move_to (center.x, 0);
+            cairo.line_to (center.x, height);
+            cairo.move_to (0, center.y);
+            cairo.line_to (width, center.y);
+
+            cairo.stroke ();
+
+            cairo.set_line_width (0.1);
+
+            for (double i = center.x; i > 0; i -= center.x.abs ()) {
                 cairo.move_to (i, 0);
                 cairo.line_to (i, height);
                 cairo.stroke ();
             }
-            for (int i = 0; i < height; i += 20) {
-                cairo.set_line_width ((i + 20 > height) ? 0.5 : 0.1);
-                y = (i + 20 > height) ? i : y;
+
+            for (double i = center.x; i < width; i += center.x.abs ()) {
+                cairo.move_to (i, 0);
+                cairo.line_to (i, height);
+                cairo.stroke ();
+            }
+
+            for (double i = center.y; i > 0; i -= center.y.abs () / 5) {
                 cairo.move_to (0, i);
                 cairo.line_to (width, i);
                 cairo.stroke ();
             }
 
-            this.center = new Point (x, y);
+            for (double i = center.y; i < height; i += center.y.abs () / 5) {
+                cairo.move_to (0, i);
+                cairo.line_to (width, i);
+                cairo.stroke ();
+            }
         }
 
         public void clear () {
             while (series.size > 0) {
-                while (series.first ().points.size > 0) {
-                    this.series.first ().points.remove_at (0);
-                }
                 this.series.remove_at (0);
             }
         }
@@ -77,11 +90,33 @@ namespace Quarry {
         }
 
         public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            draw_coordinate_axis (drawing_area, cairo, width, height);
+            var min_x = 0, max_x = 0;
+
+            if (series.size > 0) {
+                min_x = max_x = series.first ().points.first ().x;
+
+                foreach (var series_item in series) {
+                    foreach (var point in series_item.points) {
+                        if (point.x < min_x) {
+                            min_x = point.x;
+                        }
+                        if (point.x > max_x) {
+                            max_x = point.x;
+                        }
+                    }
+                }
+            }
+
+            this.center = new Point (width / 16, 15 * height / 16);
+
+            draw_axis (drawing_area, cairo, width, height);
+
+            cairo.set_line_width (1.0);
 
             cairo.move_to (center.x, center.y);
 
             foreach (var series_item in series) {
+                cairo.set_source_rgb (series_item.color.r, series_item.color.g, series_item.color.b);
                 foreach (var point in series_item.points) {
                     cairo.line_to (center.x + point.x, center.y - point.y);
                 }

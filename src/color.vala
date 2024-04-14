@@ -1,4 +1,4 @@
-/* series.vala
+/* color.vala
  *
  * Copyright 2024 khaustov
  *
@@ -19,20 +19,12 @@
  */
 
 namespace Quarry {
-    public class Series : Object {
-        public Gee.ArrayList<Point> points { get; construct; }
-        public Color color { get; construct; }
-
-        public Series (Color color) {
-            Object (color: color);
-        }
-
-        construct {
-            this.points = new Gee.ArrayList<Point> ();
-        }
-
-        public void add_point (int x, int y) {
-            this.points.add (new Point (x, y));
+    public class Color : Object {
+        public double r { get; construct; }
+        public double g { get; construct; }
+        public double b { get; construct; }
+        public Color (double r, double g, double b) {
+            Object (r: r, g: g, b: b);
         }
     }
 }

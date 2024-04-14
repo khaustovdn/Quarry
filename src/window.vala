@@ -67,15 +67,15 @@ namespace Quarry {
                 }
             }
 
-            var crusher_queue_series = new Series ();
-            var excavators_queue_series = new Series ();
+            var crusher_queue_series = new Series (new Color (0.2, 0.8, 0.3));
+            var excavators_queue_series = new Series (new Color (0.8, 0.2, 0.3));
 
             for (int i = 0; i < timer; i++) {
                 print ("\n\ntime %d\n", i);
 
                 crusher.update ();
 
-                crusher_queue_series.add_point (i / 12, crusher.truck_list.size * 10);
+                crusher_queue_series.add_point (i / 10, crusher.truck_list.size * 10);
 
                 var excavators_queue = 0;
 
@@ -91,7 +91,7 @@ namespace Quarry {
                     excavators_queue += excavator.truck_list.size;
                 }
 
-                excavators_queue_series.add_point (i / 12, excavators_queue * 10);
+                excavators_queue_series.add_point (i / 10, excavators_queue * 10);
 
                 Idle.add (simulate.callback);
                 yield;

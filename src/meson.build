@@ -26,5 +26,6 @@ executable(
   'quarry',
   quarry_sources,
   dependencies: quarry_deps,
+  link_args: ['-lm'],
   install: true,
 )

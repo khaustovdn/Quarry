@@ -22,11 +22,12 @@ namespace Quarry {
     public class DumpTruck : Object {
         public Load load { get; set; }
         public int time { get; set; }
+        public int tonnage { get; construct; }
         public Excavator excavator { get; construct; }
         public Crusher crusher { get; construct; }
 
-        public DumpTruck (Load load, int time, Excavator excavator, Crusher crusher) {
-            Object (load: load, time: time, excavator: excavator, crusher: crusher);
+        public DumpTruck (Load load, int time, int tonnage, Excavator excavator, Crusher crusher) {
+            Object (load: load, time: time, tonnage: tonnage, excavator: excavator, crusher: crusher);
         }
 
         public void update () {
@@ -42,8 +43,12 @@ namespace Quarry {
                         }
                     }
                 } else if (!this.excavator.truck_list.contains (this) && !this.crusher.truck_list.contains (this)) {
-                    print ("running truck\n");
-                    this.time = 2;
+                    print ("running truck %d\n", this.tonnage);
+                    if (this.load == Load.LOADED) {
+                        this.time = (this.tonnage == 50) ? 180 : 150;
+                    } else if (this.load == Load.UNLOADED) {
+                        this.time = (this.tonnage == 50) ? 120 : 90;
+                    }
                     this.time--;
                 }
             }

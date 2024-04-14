@@ -20,7 +20,7 @@
 
 namespace Quarry {
     public class Charts : Gtk.DrawingArea {
-        public Series series { get; construct; }
+        public Gee.ArrayList<Series> series { get; construct; }
         public Point center { get; set; }
 
         public Charts () {
@@ -28,7 +28,8 @@ namespace Quarry {
         }
 
         construct {
-            this.series = new Series ();
+
+            this.series = new Gee.ArrayList<Series> ();
 
             this.width_request = 360;
             this.height_request = 294;
@@ -53,7 +54,7 @@ namespace Quarry {
             }
             for (int i = 0; i < height; i += 20) {
                 cairo.set_line_width ((i + 20 > height) ? 0.5 : 0.1);
-                y = (i + 20 > height) ? i : x;
+                y = (i + 20 > height) ? i : y;
                 cairo.move_to (0, i);
                 cairo.line_to (width, i);
                 cairo.stroke ();
@@ -63,8 +64,11 @@ namespace Quarry {
         }
 
         public void clear () {
-            while (series.points.size > 0) {
-                this.series.points.remove_at (0);
+            while (series.size > 0) {
+                while (series.first ().points.size > 0) {
+                    this.series.first ().points.remove_at (0);
+                }
+                this.series.remove_at (0);
             }
         }
 
@@ -77,11 +81,13 @@ namespace Quarry {
 
             cairo.move_to (center.x, center.y);
 
-            foreach (var point in series.points) {
-                cairo.line_to (center.x + point.x, center.y - point.y);
-            }
+            foreach (var series_item in series) {
+                foreach (var point in series_item.points) {
+                    cairo.line_to (center.x + point.x, center.y - point.y);
+                }
 
-            cairo.stroke ();
+                cairo.stroke ();
+            }
         }
     }
 }

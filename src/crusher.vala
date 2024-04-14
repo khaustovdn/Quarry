@@ -46,7 +46,8 @@ namespace Quarry {
             if (this.truck_list.first ().load == Load.LOADED && this.time == 0) {
                 print ("unloading the truck\n");
                 this.truck_list.first ().load = Load.IN_PROGRESS;
-                this.time = 2;
+                var rand = Random.next_double ();
+                this.time = (int) (-Math.log (1 - rand) * ((this.truck_list.first ().tonnage == 50) ? 240 : 120));
                 this.time--;
             }
         }

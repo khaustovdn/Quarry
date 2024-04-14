@@ -61,18 +61,23 @@ namespace Quarry {
 
             foreach (var excavator in excavator_list) {
                 for (int i = 0; i < 3; i++) {
-                    var truck = new DumpTruck (Load.UNLOADED, 0, excavator, crusher);
+                    var truck = new DumpTruck (Load.UNLOADED, 0, (i == 0) ? 50 : 20, excavator, crusher);
                     truck_list.add (truck);
                     excavator.truck_list.add (truck);
                 }
             }
 
+            var crusher_queue_series = new Series ();
+            var excavators_queue_series = new Series ();
+
             for (int i = 0; i < timer; i++) {
-                print ("\n\ntime %d\n", timer);
+                print ("\n\ntime %d\n", i);
 
                 crusher.update ();
 
-                charts.series.add_point (i * 10, crusher.truck_list.size * 10);
+                crusher_queue_series.add_point (i / 12, crusher.truck_list.size * 10);
+
+                var excavators_queue = 0;
 
                 foreach (var excavator in excavator_list) {
                     excavator.update ();
@@ -82,11 +87,18 @@ namespace Quarry {
                             truck.update ();
                         }
                     }
+
+                    excavators_queue += excavator.truck_list.size;
                 }
+
+                excavators_queue_series.add_point (i / 12, excavators_queue * 10);
 
                 Idle.add (simulate.callback);
                 yield;
             }
+
+            charts.series.add (crusher_queue_series);
+            charts.series.add (excavators_queue_series);
 
             print ("\n\n---%d---\n\n", count);
             count = 0;

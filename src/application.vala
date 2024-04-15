@@ -24,7 +24,7 @@ namespace Quarry {
     public enum Load {
         LOADED,
         UNLOADED,
-        IN_PROGRESS
+        IN_PROCESS,
     }
 
     public class Application : Adw.Application {

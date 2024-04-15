@@ -30,7 +30,18 @@ namespace Quarry {
         public void update () {
             if (this.truck_list.is_empty)return;
 
-            if (this.truck_list.first ().load == Load.IN_PROGRESS) {
+            if (this.truck_list.first ().load == Load.UNLOADED) {
+                if (this.time > 0) {
+                    printerr ("Error: time does not correspond to the type of dump truck unloading\n");
+                }
+                this.truck_list.first ().load = Load.UNLOADED;
+                this.truck_list.remove_at (0);
+                this.time = 0;
+            }
+
+            if (this.truck_list.is_empty)return;
+
+            if (this.truck_list.first ().load == Load.IN_PROCESS) {
                 if (this.time > 0) {
                     print ("crusher time %d\n", this.time);
                     this.time--;
@@ -46,10 +57,10 @@ namespace Quarry {
 
             if (this.truck_list.first ().load == Load.LOADED && this.time == 0) {
                 print ("unloading the truck\n");
-                this.truck_list.first ().load = Load.IN_PROGRESS;
+                this.truck_list.first ().load = Load.IN_PROCESS;
                 var rand = Random.next_double ();
                 this.time = (int) (-Math.log (1 - rand) * ((this.truck_list.first ().tonnage == 50) ? 240 : 120));
-                this.time -= 60;
+                this.time--;
             }
         }
     }

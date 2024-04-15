@@ -26,31 +26,36 @@ namespace Quarry {
         public Excavator excavator { get; construct; }
         public Crusher crusher { get; construct; }
 
+        private bool in_transit = false;
+
         public DumpTruck (Load load, int time, int tonnage, Excavator excavator, Crusher crusher) {
             Object (load: load, time: time, tonnage: tonnage, excavator: excavator, crusher: crusher);
         }
 
         public void update () {
-            if (this.load != Load.IN_PROGRESS) {
-                if (this.time > 0) {
-                    print ("run time %d\n", this.time);
-                    this.time--;
-                    if (this.time == 0) {
-                        if (this.load == Load.LOADED) {
-                            this.crusher.truck_list.add (this);
-                        } else if (this.load == Load.UNLOADED) {
-                            this.excavator.truck_list.add (this);
-                        }
-                        this.time = 0;
-                    }
-                } else if (!this.excavator.truck_list.contains (this) && !this.crusher.truck_list.contains (this)) {
-                    print ("running truck %d\n", this.tonnage);
+            if (!this.excavator.truck_list.contains (this) && !this.crusher.truck_list.contains (this)) {
+                if (!in_transit) {
+                    print ("truck in transit %d\n", this.tonnage);
                     if (this.load == Load.LOADED) {
                         this.time = (this.tonnage == 50) ? 180 : 150;
                     } else if (this.load == Load.UNLOADED) {
                         this.time = (this.tonnage == 50) ? 120 : 90;
                     }
-                    this.time -= 60;
+                    in_transit = true;
+                    this.time--;
+                }
+
+                if (this.time > 0) {
+                    print ("transit time  %d\n", this.time);
+                    this.time--;
+                } else {
+                    if (this.load == Load.LOADED) {
+                        this.crusher.truck_list.add (this);
+                    } else if (this.load == Load.UNLOADED) {
+                        this.excavator.truck_list.add (this);
+                    }
+                    in_transit = false;
+                    this.time = 0;
                 }
             }
         }

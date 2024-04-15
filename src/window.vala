@@ -57,13 +57,10 @@ namespace Quarry {
 
             for (int i = 0; i < 3; i++) {
                 excavator_list.add (new Excavator (0, new Gee.ArrayList<DumpTruck> ()));
-            }
-
-            foreach (var excavator in excavator_list) {
-                for (int i = 0; i < 3; i++) {
-                    var truck = new DumpTruck (Load.UNLOADED, 0, (i == 0) ? 50 : 20, excavator, crusher);
+                for (int j = 0; j < 3; j++) {
+                    var truck = new DumpTruck (Load.UNLOADED, 0, (j == 0) ? 50 : 20, excavator_list.last (), crusher);
                     truck_list.add (truck);
-                    excavator.truck_list.add (truck);
+                    excavator_list.last().truck_list.add (truck);
                 }
             }
 
@@ -74,8 +71,6 @@ namespace Quarry {
                 print ("\n\ntime %d\n", i);
 
                 crusher.update ();
-
-                crusher_queue_series.add_point (i / 10, crusher.truck_list.size * 10);
 
                 var excavators_queue = 0;
 
@@ -91,7 +86,9 @@ namespace Quarry {
                     excavators_queue += excavator.truck_list.size;
                 }
 
-                excavators_queue_series.add_point (i / 10, excavators_queue * 10);
+                excavators_queue_series.add_point (i, excavators_queue * 10);
+
+                crusher_queue_series.add_point (i, crusher.truck_list.size * 10);
 
                 Idle.add (simulate.callback);
                 yield;

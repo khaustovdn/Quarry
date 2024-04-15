@@ -47,34 +47,34 @@ namespace Quarry {
         private void draw_axis (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             cairo.set_line_width (0.5);
 
-            cairo.move_to (center.x, 0);
-            cairo.line_to (center.x, height);
-            cairo.move_to (0, center.y);
-            cairo.line_to (width, center.y);
+            cairo.move_to (this.center.x, 0);
+            cairo.line_to (this.center.x, height);
+            cairo.move_to (0, this.center.y);
+            cairo.line_to (width, this.center.y);
 
             cairo.stroke ();
 
             cairo.set_line_width (0.1);
 
-            for (double i = center.x; i > 0; i -= (600 / ((double) (max_x - min_x).abs () / (double) (width).abs ()))) {
+            for (double i = this.center.x; i > 0; i -= (60 / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ()))) {
                 cairo.move_to (i, 0);
                 cairo.line_to (i, height);
                 cairo.stroke ();
             }
 
-            for (double i = center.x; i < width; i += (600 / ((double) (max_x - min_x).abs () / (double) (width).abs ()))) {
+            for (double i = this.center.x; i < width; i += (60 / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ()))) {
                 cairo.move_to (i, 0);
                 cairo.line_to (i, height);
                 cairo.stroke ();
             }
 
-            for (double i = center.y; i > 0; i -= (600 / ((double) (max_x - min_x).abs () / (double) (width).abs ()))) {
+            for (double i = this.center.y; i > 0; i -= (60 / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ()))) {
                 cairo.move_to (0, i);
                 cairo.line_to (width, i);
                 cairo.stroke ();
             }
 
-            for (double i = center.y; i < height; i += (600 / ((double) (max_x - min_x).abs () / (double) (width).abs ()))) {
+            for (double i = this.center.y; i < height; i += (60 / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ()))) {
                 cairo.move_to (0, i);
                 cairo.line_to (width, i);
                 cairo.stroke ();
@@ -85,32 +85,32 @@ namespace Quarry {
             this.min_x = 0;
             this.max_x = width;
 
-            if (series.size > 0) {
-                min_x = max_x = series.first ().points.first ().x;
+            if (this.series.size > 0) {
+                this.min_x = this.max_x = this.series.first ().points.first ().x;
 
-                foreach (var series_item in series) {
+                foreach (var series_item in this.series) {
                     foreach (var point in series_item.points) {
-                        if (point.x < min_x) {
-                            min_x = point.x;
+                        if (point.x < this.min_x) {
+                            this.min_x = point.x;
                         }
-                        if (point.x > max_x) {
-                            max_x = point.x;
+                        if (point.x > this.max_x) {
+                            this.max_x = point.x;
                         }
                     }
                 }
             }
 
-            this.center = new Point (-(int)(min_x/ ((double) (max_x - min_x).abs () / (double) (width).abs ())), 15 * height / 16);
+            this.center = new Point (-(int) (this.min_x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ())), 15 * height / 16);
 
             draw_axis (drawing_area, cairo, width, height);
 
             cairo.set_line_width (1.0);
 
-            foreach (var series_item in series) {
+            foreach (var series_item in this.series) {
                 cairo.set_source_rgb (series_item.color.r, series_item.color.g, series_item.color.b);
-                cairo.move_to (center.x + (series_item.points.first ().x / ((double) (max_x - min_x).abs () / (double) (width).abs ())), center.y - series_item.points.first ().y);
+                cairo.move_to (this.center.x + (series_item.points.first ().x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ())), this.center.y - series_item.points.first ().y);
                 foreach (var point in series_item.points) {
-                    cairo.line_to (center.x + (point.x / ((double) (max_x - min_x).abs () / (double) (width).abs ())), center.y - point.y);
+                    cairo.line_to (this.center.x + (point.x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ())), this.center.y - point.y);
                 }
                 cairo.stroke ();
             }

@@ -60,7 +60,7 @@ namespace Quarry {
                 for (int j = 0; j < 3; j++) {
                     var truck = new DumpTruck (Load.UNLOADED, 0, (j == 0) ? 50 : 20, excavator_list.last (), crusher);
                     truck_list.add (truck);
-                    excavator_list.last().truck_list.add (truck);
+                    excavator_list.last ().truck_list.add (truck);
                 }
             }
 
@@ -68,7 +68,7 @@ namespace Quarry {
             var excavators_queue_series = new Series (new Color (0.8, 0.2, 0.3));
 
             for (int i = 0; i < timer; i++) {
-                print ("\n\ntime %d\n", i);
+                // print ("\n\ntime %d\n", i);
 
                 crusher.update ();
 

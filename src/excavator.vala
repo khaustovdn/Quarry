@@ -43,7 +43,7 @@ namespace Quarry {
 
             if (this.truck_list.first ().load == Load.IN_PROCESS) {
                 if (this.time > 0) {
-                    print ("excavator time %d\n", this.time);
+                    // print ("excavator time %d\n", this.time);
                     this.time--;
                 } else {
                     this.truck_list.first ().load = Load.LOADED;
@@ -55,10 +55,11 @@ namespace Quarry {
             if (this.truck_list.is_empty)return;
 
             if (this.truck_list.first ().load == Load.UNLOADED && this.time == 0) {
-                print ("loading the truck\n");
+                // print ("loading the truck\n");
                 this.truck_list.first ().load = Load.IN_PROCESS;
                 var rand = Random.next_double ();
                 this.time = (int) (-Math.log (1 - rand) * ((this.truck_list.first ().tonnage == 50) ? 600 : 300));
+                print ("excavator: random %d tonnage %d\n", this.time, this.truck_list.first ().tonnage);
                 this.time--;
             }
         }

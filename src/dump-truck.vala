@@ -34,19 +34,19 @@ namespace Quarry {
 
         public void update () {
             if (!this.excavator.truck_list.contains (this) && !this.crusher.truck_list.contains (this)) {
-                if (!in_transit) {
-                    print ("truck in transit %d\n", this.tonnage);
+                if (!this.in_transit) {
+                    // print ("truck in transit %d\n", this.tonnage);
                     if (this.load == Load.LOADED) {
                         this.time = (this.tonnage == 50) ? 180 : 150;
                     } else if (this.load == Load.UNLOADED) {
                         this.time = (this.tonnage == 50) ? 120 : 90;
                     }
-                    in_transit = true;
+                    this.in_transit = true;
                     this.time--;
                 }
 
                 if (this.time > 0) {
-                    print ("transit time  %d\n", this.time);
+                    // print ("transit time  %d\n", this.time);
                     this.time--;
                 } else {
                     if (this.load == Load.LOADED) {
@@ -54,7 +54,7 @@ namespace Quarry {
                     } else if (this.load == Load.UNLOADED) {
                         this.excavator.truck_list.add (this);
                     }
-                    in_transit = false;
+                    this.in_transit = false;
                     this.time = 0;
                 }
             }

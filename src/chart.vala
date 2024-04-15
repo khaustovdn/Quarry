@@ -23,6 +23,9 @@ namespace Quarry {
         public Gee.ArrayList<Series> series { get; construct; }
         public Point center { get; set; }
 
+        public int min_x { private get; set; }
+        public int max_x { private get; set; }
+
         public Chart () {
             Object ();
         }
@@ -53,25 +56,25 @@ namespace Quarry {
 
             cairo.set_line_width (0.1);
 
-            for (double i = center.x; i > 0; i -= center.x.abs ()) {
+            for (double i = center.x; i > 0; i -= (600 / ((double) (max_x - min_x).abs () / (double) (width).abs ()))) {
                 cairo.move_to (i, 0);
                 cairo.line_to (i, height);
                 cairo.stroke ();
             }
 
-            for (double i = center.x; i < width; i += center.x.abs ()) {
+            for (double i = center.x; i < width; i += (600 / ((double) (max_x - min_x).abs () / (double) (width).abs ()))) {
                 cairo.move_to (i, 0);
                 cairo.line_to (i, height);
                 cairo.stroke ();
             }
 
-            for (double i = center.y; i > 0; i -= center.y.abs () / 5) {
+            for (double i = center.y; i > 0; i -= (600 / ((double) (max_x - min_x).abs () / (double) (width).abs ()))) {
                 cairo.move_to (0, i);
                 cairo.line_to (width, i);
                 cairo.stroke ();
             }
 
-            for (double i = center.y; i < height; i += center.y.abs () / 5) {
+            for (double i = center.y; i < height; i += (600 / ((double) (max_x - min_x).abs () / (double) (width).abs ()))) {
                 cairo.move_to (0, i);
                 cairo.line_to (width, i);
                 cairo.stroke ();
@@ -79,7 +82,8 @@ namespace Quarry {
         }
 
         public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            var min_x = 0, max_x = 10;
+            this.min_x = 0;
+            this.max_x = width;
 
             if (series.size > 0) {
                 min_x = max_x = series.first ().points.first ().x;
@@ -96,7 +100,7 @@ namespace Quarry {
                 }
             }
 
-            this.center = new Point (width / 16, 15 * height / 16);
+            this.center = new Point (-(int)(min_x/ ((double) (max_x - min_x).abs () / (double) (width).abs ())), 15 * height / 16);
 
             draw_axis (drawing_area, cairo, width, height);
 
@@ -104,9 +108,9 @@ namespace Quarry {
 
             foreach (var series_item in series) {
                 cairo.set_source_rgb (series_item.color.r, series_item.color.g, series_item.color.b);
-                cairo.move_to (center.x + series_item.points.first ().x, center.y - series_item.points.first ().y);
+                cairo.move_to (center.x + (series_item.points.first ().x / ((double) (max_x - min_x).abs () / (double) (width).abs ())), center.y - series_item.points.first ().y);
                 foreach (var point in series_item.points) {
-                    cairo.line_to (center.x + (point.x / ((double) (max_x - min_x).abs () / (double) (width - center.x).abs ())), center.y - point.y);
+                    cairo.line_to (center.x + (point.x / ((double) (max_x - min_x).abs () / (double) (width).abs ())), center.y - point.y);
                 }
                 cairo.stroke ();
             }

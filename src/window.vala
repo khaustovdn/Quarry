@@ -53,11 +53,11 @@ namespace Quarry {
 
             var truck_list = new Gee.ArrayList<DumpTruck> ();
             var crusher = new Crusher (0, new Gee.ArrayList<DumpTruck> ());
-            var excavator_list = new Gee.ArrayList<Excavator>.wrap ({
-                new Excavator (0, new Gee.ArrayList<DumpTruck> ()),
-                new Excavator (0, new Gee.ArrayList<DumpTruck> ()),
-                new Excavator (0, new Gee.ArrayList<DumpTruck> ())
-            });
+            var excavator_list = new Gee.ArrayList<Excavator> ();
+
+            for (int i = 0; i < 3; i++) {
+                excavator_list.add (new Excavator (0, new Gee.ArrayList<DumpTruck> ()));
+            }
 
             foreach (var excavator in excavator_list) {
                 for (int i = 0; i < 3; i++) {

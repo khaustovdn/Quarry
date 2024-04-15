@@ -37,6 +37,7 @@ namespace Quarry {
                 } else {
                     this.truck_list.first ().load = Load.LOADED;
                     this.truck_list.remove_at (0);
+                    this.time = 0;
                 }
             }
 
@@ -47,7 +48,7 @@ namespace Quarry {
                 this.truck_list.first ().load = Load.IN_PROGRESS;
                 var rand = Random.next_double ();
                 this.time = (int) (-Math.log (1 - rand) * ((this.truck_list.first ().tonnage == 50) ? 600 : 300));
-                this.time--;
+                this.time -= 60;
             }
         }
     }

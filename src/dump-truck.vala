@@ -41,6 +41,7 @@ namespace Quarry {
                         } else if (this.load == Load.UNLOADED) {
                             this.excavator.truck_list.add (this);
                         }
+                        this.time = 0;
                     }
                 } else if (!this.excavator.truck_list.contains (this) && !this.crusher.truck_list.contains (this)) {
                     print ("running truck %d\n", this.tonnage);
@@ -49,7 +50,7 @@ namespace Quarry {
                     } else if (this.load == Load.UNLOADED) {
                         this.time = (this.tonnage == 50) ? 120 : 90;
                     }
-                    this.time--;
+                    this.time -= 60;
                 }
             }
         }

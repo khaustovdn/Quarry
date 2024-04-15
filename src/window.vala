@@ -35,20 +35,20 @@ namespace Quarry {
         }
 
         construct {
-            Charts charts = new Charts ();
+            Chart chart = new Chart ();
 
             this.simulate_button.clicked.connect (() => {
-                charts.clear ();
-                simulate.begin (charts, (obj, res) => {
+                chart.series.clear ();
+                simulate.begin (chart, (obj, res) => {
                     simulate.end (res);
-                    charts.update ();
+                    chart.queue_draw ();
                 });
             });
 
-            simulation_listbox.append (charts);
+            simulation_listbox.append (chart);
         }
 
-        public async void simulate (Charts charts) {
+        public async void simulate (Chart chart) {
             int timer = (int) this.timer_spin_row.adjustment.value;
 
             var truck_list = new Gee.ArrayList<DumpTruck> ();
@@ -97,8 +97,8 @@ namespace Quarry {
                 yield;
             }
 
-            charts.series.add (crusher_queue_series);
-            charts.series.add (excavators_queue_series);
+            chart.series.add (crusher_queue_series);
+            chart.series.add (excavators_queue_series);
 
             print ("\n\n---%d---\n\n", count);
             count = 0;

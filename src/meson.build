@@ -5,7 +5,7 @@ quarry_sources = [
   'excavator.vala',
   'crusher.vala',
   'dump-truck.vala',
-  'charts.vala',
+  'chart.vala',
   'series.vala',
   'point.vala',
   'color.vala',

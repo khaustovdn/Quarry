@@ -1,4 +1,4 @@
-/* charts.vala
+/* chart.vala
  *
  * Copyright 2024 khaustov
  *
@@ -19,16 +19,15 @@
  */
 
 namespace Quarry {
-    public class Charts : Gtk.DrawingArea {
+    public class Chart : Gtk.DrawingArea {
         public Gee.ArrayList<Series> series { get; construct; }
         public Point center { get; set; }
 
-        public Charts () {
+        public Chart () {
             Object ();
         }
 
         construct {
-
             this.series = new Gee.ArrayList<Series> ();
 
             this.width_request = 360;
@@ -79,18 +78,8 @@ namespace Quarry {
             }
         }
 
-        public void clear () {
-            while (series.size > 0) {
-                this.series.remove_at (0);
-            }
-        }
-
-        public void update () {
-            this.queue_draw ();
-        }
-
         public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            var min_x = 0, max_x = 0;
+            var min_x = 0, max_x = 10;
 
             if (series.size > 0) {
                 min_x = max_x = series.first ().points.first ().x;
@@ -113,14 +102,12 @@ namespace Quarry {
 
             cairo.set_line_width (1.0);
 
-            cairo.move_to (center.x, center.y);
-
             foreach (var series_item in series) {
                 cairo.set_source_rgb (series_item.color.r, series_item.color.g, series_item.color.b);
+                cairo.move_to (center.x + series_item.points.first ().x, center.y - series_item.points.first ().y);
                 foreach (var point in series_item.points) {
-                    cairo.line_to (center.x + point.x, center.y - point.y);
+                    cairo.line_to (center.x + (point.x / ((double) (max_x - min_x).abs () / (double) (width - center.x).abs ())), center.y - point.y);
                 }
-
                 cairo.stroke ();
             }
         }

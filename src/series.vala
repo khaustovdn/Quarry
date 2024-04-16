@@ -30,9 +30,5 @@ namespace Quarry {
         construct {
             this.points = new Gee.ArrayList<Point> ();
         }
-
-        public void add_point (int x, int y) {
-            this.points.add (new Point (x, y));
-        }
     }
 }

@@ -44,7 +44,20 @@ namespace Quarry {
             this.set_draw_func (draw);
         }
 
-        private void draw_axis (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            this.min_x = -width / 16; this.max_x = width;
+            calculate_min_max_x ();
+            calculate_center (width, height);
+            draw_grid (drawing_area, cairo, width, height);
+
+            cairo.set_line_width (1.0);
+
+            foreach (var series_item in this.series) {
+                draw_series (cairo, series_item, width);
+            }
+        }
+
+        private void draw_grid (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             cairo.set_line_width (0.5);
 
             draw_line (cairo, this.center.x, 0, this.center.x, height);
@@ -67,14 +80,15 @@ namespace Quarry {
             }
         }
 
-        private double calculate_grid_step (int width) {
-            double step = 60 / ((double) (this.max_x - this.min_x).abs () / (double) width.abs ());
+        private void draw_series (Cairo.Context cairo, Series series_item, int width) {
+            cairo.set_source_rgb (series_item.color.red, series_item.color.green, series_item.color.blue);
+            cairo.move_to (calculate_x_coordinate (series_item.points.first ().x, width), calculate_y_coordinate (series_item.points.first ().y));
 
-            while (step < 10) {
-                step *= 10;
+            foreach (var point in series_item.points) {
+                cairo.line_to (calculate_x_coordinate (point.x, width), calculate_y_coordinate (point.y));
             }
 
-            return step;
+            cairo.stroke ();
         }
 
         private void draw_line (Cairo.Context cairo, double x1, double y1, double x2, double y2) {
@@ -83,17 +97,26 @@ namespace Quarry {
             cairo.stroke ();
         }
 
-        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            this.min_x = -width / 16; this.max_x = width;
-            calculate_min_max_x ();
-            calculate_center (width, height);
-            draw_axis (drawing_area, cairo, width, height);
+        private void calculate_center (int width, int height) {
+            this.center = new Point (-(int) (this.min_x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ())), 15 * height / 16);
+        }
 
-            cairo.set_line_width (1.0);
+        private double calculate_x_coordinate (double x, int width) {
+            return this.center.x + (x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ()));
+        }
 
-            foreach (var series_item in this.series) {
-                draw_series (cairo, series_item, width);
+        private double calculate_y_coordinate (double y) {
+            return this.center.y - (y * 10);
+        }
+
+        private double calculate_grid_step (int width) {
+            double step = 60 / ((double) (this.max_x - this.min_x).abs () / (double) width.abs ());
+
+            while (step < 10) {
+                step *= 10;
             }
+
+            return step;
         }
 
         private void calculate_min_max_x () {
@@ -111,29 +134,6 @@ namespace Quarry {
                     }
                 }
             }
-        }
-
-        private void calculate_center (int width, int height) {
-            this.center = new Point (-(int) (this.min_x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ())), 15 * height / 16);
-        }
-
-        private void draw_series (Cairo.Context cairo, Series series_item, int width) {
-            cairo.set_source_rgb (series_item.color.r, series_item.color.g, series_item.color.b);
-            cairo.move_to (calculate_x_coordinate (series_item.points.first ().x, width), calculate_y_coordinate (series_item.points.first ().y));
-
-            foreach (var point in series_item.points) {
-                cairo.line_to (calculate_x_coordinate (point.x, width), calculate_y_coordinate (point.y));
-            }
-
-            cairo.stroke ();
-        }
-
-        private double calculate_x_coordinate (double x, int width) {
-            return this.center.x + (x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ()));
-        }
-
-        private double calculate_y_coordinate (double y) {
-            return this.center.y - (y * 10);
         }
     }
 }

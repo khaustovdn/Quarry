@@ -20,11 +20,12 @@
 
 namespace Quarry {
     public class Color : Object {
-        public double r { get; construct; }
-        public double g { get; construct; }
-        public double b { get; construct; }
-        public Color (double r, double g, double b) {
-            Object (r: r, g: g, b: b);
+        public double red { get; construct; }
+        public double green { get; construct; }
+        public double blue { get; construct; }
+
+        public Color (double red, double green, double blue) {
+            Object (red: red, green: green, blue: blue);
         }
     }
 }

@@ -64,8 +64,8 @@ namespace Quarry {
                 update();
 
                 int excavators_queue = calculate_excavators_queue();
-                excavators_queue_series.add_point(i, excavators_queue);
-                crusher_queue_series.add_point(i, this.crusher.truck_list.size);
+                excavators_queue_series.points.add(new Point(i, excavators_queue));
+                crusher_queue_series.points.add(new Point(i, this.crusher.truck_list.size));
 
                 Idle.add(simulate.callback);
                 yield;

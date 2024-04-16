@@ -60,7 +60,7 @@ namespace Quarry {
             Series crusher_queue_series = new Series(new Color(0.4, 0.8, 0.5));
             Series excavators_queue_series = new Series(new Color(0.8, 0.4, 0.5));
 
-            for (int i = 0; i < timer; i++) {
+            for (int i = 0; i < timer * 60; i++) {
                 update();
 
                 int excavators_queue = calculate_excavators_queue();

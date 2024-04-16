@@ -37,13 +37,14 @@
                     <property name="selection-mode">0</property>
                     <child>
                       <object class="AdwSpinRow" id="timer_spin_row">
-                        <property name="title" translatable="true">Spin Row</property>
+                        <property name="title" translatable="true">Timer</property>
+                        <property name="subtitle" translatable="true">Hours</property>
                         <property name="adjustment">
                           <object class="GtkAdjustment">
-                            <property name="lower">600</property>
-                            <property name="upper">120000</property>
-                            <property name="value">12000</property>
-                            <property name="step-increment">600</property>
+                            <property name="lower">1</property>
+                            <property name="upper">1000</property>
+                            <property name="value">100</property>
+                            <property name="step-increment">1</property>
                           </object>
                         </property>
                       </object>

@@ -19,30 +19,22 @@
  */
 
 namespace Quarry {
-    public class Excavator : Machine {
+    public class Excavator : Station {
         public Excavator(int time, Gee.ArrayList<DumpTruck> truck_list) {
             Object(time: time, truck_list: truck_list);
         }
 
         protected override void handle_unloaded_truck(DumpTruck truck) {
             if (this.time == 0) {
-                // print ("loading the truck\n");
                 truck.load = Load.IN_PROCESS;
                 int random_time = generate_random_time((truck.tonnage == 50) ? 600 : 300);
-                // print ("excavator: random %d tonnage %d\n", random_time, truck.tonnage);
                 this.time = random_time - 1;
             }
         }
 
         protected override void handle_in_process_truck(DumpTruck truck) {
-            if (this.time > 0) {
-                // print ("excavator time %d\n", this.time);
-                this.time--;
-            } else {
-                truck.load = Load.LOADED;
-                this.truck_list.remove_at(0);
-                this.time = 0;
-            }
+            base.handle_in_process_truck(truck);
+            if (this.time == 0)truck.load = Load.LOADED;
         }
 
         protected override void handle_loaded_truck(DumpTruck truck) {

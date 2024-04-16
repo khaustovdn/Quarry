@@ -19,45 +19,73 @@
  */
 
 namespace Quarry {
-    public class DumpTruck : Object {
+    public class DumpTruck : Machine {
         public Load load { get; set; }
-        public int time { get; set; }
         public int tonnage { get; construct; }
         public Excavator excavator { get; construct; }
         public Crusher crusher { get; construct; }
-
         private bool in_transit = false;
 
-        public DumpTruck (Load load, int time, int tonnage, Excavator excavator, Crusher crusher) {
-            Object (load: load, time: time, tonnage: tonnage, excavator: excavator, crusher: crusher);
+        public DumpTruck(Load load, int time, int tonnage, Excavator excavator, Crusher crusher) {
+            Object(load: load, time: time, tonnage: tonnage, excavator: excavator, crusher: crusher);
         }
 
-        public void update () {
-            if (!this.excavator.truck_list.contains (this) && !this.crusher.truck_list.contains (this)) {
-                if (!this.in_transit) {
-                    // print ("truck in transit %d\n", this.tonnage);
-                    if (this.load == Load.LOADED) {
-                        this.time = (this.tonnage == 50) ? 180 : 150;
-                    } else if (this.load == Load.UNLOADED) {
-                        this.time = (this.tonnage == 50) ? 120 : 90;
-                    }
-                    this.in_transit = true;
-                    this.time--;
-                }
-
-                if (this.time > 0) {
-                    // print ("transit time  %d\n", this.time);
-                    this.time--;
-                } else {
-                    if (this.load == Load.LOADED) {
-                        this.crusher.truck_list.add (this);
-                    } else if (this.load == Load.UNLOADED) {
-                        this.excavator.truck_list.add (this);
-                    }
-                    this.in_transit = false;
-                    this.time = 0;
-                }
+        public override void update() {
+            if (!is_in_excavator_list() && !is_in_crusher_list()) {
+                handle_transit();
+            } else {
+                handle_time_update();
             }
+        }
+
+        private void handle_transit() {
+            if (!is_in_transit()) {
+                calculate_transit_time();
+                this.in_transit = true;
+                this.time--;
+            }
+
+            if (time > 0) {
+                this.time--;
+            } else {
+                move_truck();
+                this.in_transit = false;
+                this.time = 0;
+            }
+        }
+
+        private void calculate_transit_time() {
+            if (this.load == Load.LOADED) {
+                this.time = (this.tonnage == 50) ? 180 : 150;
+            } else if (this.load == Load.UNLOADED) {
+                this.time = (this.tonnage == 50) ? 120 : 90;
+            }
+        }
+
+        private void move_truck() {
+            if (load == Load.LOADED) {
+                this.crusher.truck_list.add(this);
+            } else if (load == Load.UNLOADED) {
+                this.excavator.truck_list.add(this);
+            }
+        }
+
+        private void handle_time_update() {
+            if (!is_in_transit()) {
+                this.time--;
+            }
+        }
+
+        private bool is_in_transit() {
+            return this.in_transit;
+        }
+
+        private bool is_in_excavator_list() {
+            return this.excavator.truck_list.contains(this);
+        }
+
+        private bool is_in_crusher_list() {
+            return this.crusher.truck_list.contains(this);
         }
     }
 }

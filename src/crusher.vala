@@ -19,7 +19,7 @@
  */
 
 namespace Quarry {
-    public class Crusher : Machine {
+    public class Crusher : Station {
         public Crusher(int time, Gee.ArrayList<DumpTruck> truck_list) {
             Object(time: time, truck_list: truck_list);
         }
@@ -33,22 +33,14 @@ namespace Quarry {
         }
 
         protected override void handle_in_process_truck(DumpTruck truck) {
-            if (this.time > 0) {
-                // print ("crusher time %d\n", this.time);
-                this.time--;
-            } else {
-                truck.load = Load.UNLOADED;
-                this.truck_list.remove_at(0);
-                this.time = 0;
-            }
+            base.handle_in_process_truck(truck);
+            if (this.time == 0)truck.load = Load.UNLOADED;
         }
 
         protected override void handle_loaded_truck(DumpTruck truck) {
             if (this.time == 0) {
-                // print ("unloading the truck\n");
                 truck.load = Load.IN_PROCESS;
                 int random_time = generate_random_time((truck.tonnage == 50) ? 240 : 120);
-                // print ("crusher: random %d tonnage %d\n", random_time, truck.tonnage);
                 this.time = random_time - 1;
             }
         }

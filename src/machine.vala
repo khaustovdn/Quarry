@@ -18,41 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-namespace Quarry {
+ namespace Quarry {
     public abstract class Machine : Object {
         public int time { get; set; }
-        public Gee.ArrayList<DumpTruck> truck_list { get; construct; }
 
-        protected Machine(int time, Gee.ArrayList<DumpTruck> truck_list) {
-            Object(time: time, truck_list: truck_list);
+        protected Machine(int time) {
+            Object(time: time);
         }
 
-        public void update() {
-            if (this.truck_list.is_empty)return;
-
-            DumpTruck current_truck = this.truck_list.first();
-
-            switch (current_truck.load) {
-            case Load.UNLOADED:
-                handle_unloaded_truck(current_truck);
-                break;
-            case Load.IN_PROCESS:
-                handle_in_process_truck(current_truck);
-                break;
-            case Load.LOADED:
-                handle_loaded_truck(current_truck);
-                break;
-            }
-        }
-
-        protected abstract void handle_unloaded_truck(DumpTruck truck);
-
-        protected abstract void handle_in_process_truck(DumpTruck truck);
-
-        protected abstract void handle_loaded_truck(DumpTruck truck);
-
-        protected int generate_random_time(int math_expectaton) {
-            return (int) (-Math.log(1 - Random.next_double()) * math_expectaton);
-        }
+        public abstract void update();
     }
 }

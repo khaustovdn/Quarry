@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
- namespace Quarry {
+namespace Quarry {
     public abstract class Machine : Object {
         public int time { get; set; }
 

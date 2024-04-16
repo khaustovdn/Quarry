@@ -19,7 +19,7 @@
  */
 
 namespace Quarry {
-    [GtkTemplate (ui = "/io/github/Quarry/window.ui")]
+    [GtkTemplate(ui = "/io/github/Quarry/window.ui")]
     public class Window : Adw.ApplicationWindow {
         [GtkChild]
         public unowned Gtk.ListBox simulation_listbox;
@@ -28,74 +28,98 @@ namespace Quarry {
         [GtkChild]
         public unowned Gtk.Button simulate_button;
 
+        public Chart chart { private get; construct; }
+        public Gee.ArrayList<DumpTruck> truck_list { private get; set; }
+        public Crusher crusher { private get; set; }
+        public Gee.ArrayList<Excavator> excavator_list { private get; set; }
 
-
-        public Window (Gtk.Application app) {
-            Object (application: app);
+        public Window(Gtk.Application app) {
+            Object(application: app);
         }
 
         construct {
-            Chart chart = new Chart ();
+            this.chart = new Chart();
+            this.truck_list = new Gee.ArrayList<DumpTruck> ();
+            this.crusher = new Crusher(0, new Gee.ArrayList<DumpTruck> ());
+            this.excavator_list = new Gee.ArrayList<Excavator> ();
 
-            this.simulate_button.clicked.connect (() => {
-                chart.series.clear ();
-                simulate.begin (chart, (obj, res) => {
-                    simulate.end (res);
-                    chart.queue_draw ();
+            this.simulate_button.clicked.connect(() => {
+                this.chart.series.clear();
+                simulate.begin(this.chart, (int) this.timer_spin_row.adjustment.value, (obj, res) => {
+                    simulate.end(res);
+                    this.chart.queue_draw();
                 });
             });
 
-            simulation_listbox.append (chart);
+            simulation_listbox.append(this.chart);
         }
 
-        public async void simulate (Chart chart) {
-            int timer = (int) this.timer_spin_row.adjustment.value;
+        public async void simulate(Chart chart, int timer) {
+            initialize();
 
-            var truck_list = new Gee.ArrayList<DumpTruck> ();
-            var crusher = new Crusher (0, new Gee.ArrayList<DumpTruck> ());
-            var excavator_list = new Gee.ArrayList<Excavator> ();
-
-            for (int i = 0; i < 3; i++) {
-                excavator_list.add (new Excavator (0, new Gee.ArrayList<DumpTruck> ()));
-                for (int j = 0; j < 3; j++) {
-                    var truck = new DumpTruck (Load.UNLOADED, 0, (j == 0) ? 50 : 20, excavator_list.last (), crusher);
-                    truck_list.add (truck);
-                    excavator_list.last ().truck_list.add (truck);
-                }
-            }
-
-            var crusher_queue_series = new Series (new Color (0.2, 0.8, 0.3));
-            var excavators_queue_series = new Series (new Color (0.8, 0.2, 0.3));
+            Series crusher_queue_series = new Series(new Color(0.4, 0.8, 0.5));
+            Series excavators_queue_series = new Series(new Color(0.8, 0.4, 0.5));
 
             for (int i = 0; i < timer; i++) {
-                // print ("\n\ntime %d\n", i);
+                update();
 
-                crusher.update ();
+                int excavators_queue = calculate_excavators_queue();
+                excavators_queue_series.add_point(i, excavators_queue);
+                crusher_queue_series.add_point(i, this.crusher.truck_list.size);
 
-                var excavators_queue = 0;
-
-                foreach (var excavator in excavator_list) {
-                    excavator.update ();
-
-                    foreach (var truck in truck_list) {
-                        if (truck.excavator == excavator) {
-                            truck.update ();
-                        }
-                    }
-
-                    excavators_queue += excavator.truck_list.size;
-                }
-
-                excavators_queue_series.add_point (i, excavators_queue * 10);
-
-                crusher_queue_series.add_point (i, crusher.truck_list.size * 10);
-
-                Idle.add (simulate.callback);
+                Idle.add(simulate.callback);
                 yield;
             }
 
-            chart.series.add (crusher_queue_series);
-            chart.series.add (excavators_queue_series);
+            clear();
+
+            chart.series.add(crusher_queue_series);
+            chart.series.add(excavators_queue_series);
+        }
+
+        private void initialize() {
+            for (int i = 0; i < 3; i++) {
+                Excavator excavator = new Excavator(0, new Gee.ArrayList<DumpTruck> ());
+                this.excavator_list.add(excavator);
+
+                for (int j = 0; j < 3; j++) {
+                    int tonnage = (j == 0) ? 50 : 20;
+                    DumpTruck truck = new DumpTruck(Load.UNLOADED, 0, tonnage, excavator, this.crusher);
+
+                    this.truck_list.add(truck);
+                    excavator.truck_list.add(truck);
+                }
+            }
+        }
+
+        private void update() {
+            this.crusher.update();
+
+            foreach (var excavator in this.excavator_list) {
+                excavator.update();
+
+                foreach (var truck in this.truck_list) {
+                    if (truck.excavator == excavator) {
+                        truck.update();
+                    }
+                }
+            }
+        }
+
+        private void clear() {
+            this.excavator_list.clear();
+            this.truck_list.clear();
+            this.crusher = new Crusher(0, new Gee.ArrayList<DumpTruck> ());
+        }
+
+        private int calculate_excavators_queue() {
+            int excavators_queue = 0;
+
+            foreach (var excavator in this.excavator_list) {
+                excavators_queue += excavator.truck_list.size;
+            }
+
+            return excavators_queue;
         }
     }
 }

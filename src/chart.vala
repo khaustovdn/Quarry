@@ -108,9 +108,9 @@ namespace Quarry {
 
             foreach (var series_item in this.series) {
                 cairo.set_source_rgb (series_item.color.r, series_item.color.g, series_item.color.b);
-                cairo.move_to (this.center.x + (series_item.points.first ().x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ())), this.center.y - series_item.points.first ().y);
+                cairo.move_to (this.center.x + (series_item.points.first ().x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ())), this.center.y - (series_item.points.first ().y* 10));
                 foreach (var point in series_item.points) {
-                    cairo.line_to (this.center.x + (point.x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ())), this.center.y - point.y);
+                    cairo.line_to (this.center.x + (point.x / ((double) (this.max_x - this.min_x).abs () / (double) (width).abs ())), this.center.y - (point.y * 10));
                 }
                 cairo.stroke ();
             }

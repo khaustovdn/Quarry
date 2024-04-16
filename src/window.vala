@@ -96,9 +96,6 @@ namespace Quarry {
 
             chart.series.add (crusher_queue_series);
             chart.series.add (excavators_queue_series);
-
-            print ("\n\n---%d---\n\n", count);
-            count = 0;
         }
     }
 }

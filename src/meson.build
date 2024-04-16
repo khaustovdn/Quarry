@@ -2,6 +2,7 @@ quarry_sources = [
   'main.vala',
   'application.vala',
   'window.vala',
+  'machine.vala',
   'excavator.vala',
   'crusher.vala',
   'dump-truck.vala',

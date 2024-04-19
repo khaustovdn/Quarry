@@ -23,7 +23,9 @@ namespace Quarry {
         public Gee.ArrayList<Series> series { get; construct; }
         public Point center { get; set; }
         public Gtk.GestureDrag move_gesture;
+        public Gtk.GestureZoom zoom_gesture;
         public Point current_position;
+        public double current_scale;
 
         public int min_x { private get; set; }
         public int max_x { private get; set; }
@@ -35,6 +37,9 @@ namespace Quarry {
         construct {
             this.series = new Gee.ArrayList<Series> ();
 
+            this.current_position = new Point (0, 0);
+            this.current_scale = 1.0;
+
             this.content_width = 360;
             this.content_height = 294;
 
@@ -44,29 +49,43 @@ namespace Quarry {
             this.margin_end = 12;
 
             this.min_x = -this.get_content_width () / 16; this.max_x = this.get_content_width ();
+            calculate_min_max_x ();
             this.calculate_center (this.get_content_width (), this.get_content_height ());
 
             this.set_draw_func (draw);
 
             this.move_gesture = new Gtk.GestureDrag ();
+            this.zoom_gesture = new Gtk.GestureZoom ();
 
-            this.move_gesture.drag_update.connect ((_, x_pos, y_pos) => {
-                var move_x = center.x + ((x_pos - this.current_position.x > 0) ? 1 : -1) * (int) (x_pos - this.current_position.x).abs ();
-                var move_y = center.y + ((y_pos - this.current_position.y > 0) ? 1 : -1) * (int) (y_pos - this.current_position.y).abs ();
+            this.move_gesture.drag_update.connect ((offset_x, offset_y) => {
+                var move_x = center.x + ((offset_x - this.current_position.x > 0) ? 1 : -1) * (int) (offset_x - this.current_position.x).abs ();
+                var move_y = center.y + ((offset_y - this.current_position.y > 0) ? 1 : -1) * (int) (offset_y - this.current_position.y).abs ();
                 center = new Point ((int) move_x, (int) move_y);
-                this.current_position = new Point ((int) x_pos, (int) y_pos);
+                this.current_position = new Point ((int) offset_x, (int) offset_y);
                 this.queue_draw ();
             });
 
-            this.move_gesture.drag_end.connect ((_, x, y) => {
+            this.move_gesture.drag_end.connect (() => {
                 this.current_position = new Point (0, 0);
             });
 
+            this.zoom_gesture.scale_changed.connect ((scale) => {
+                if (this.current_scale >= 1 / (double) this.get_content_width ()) {
+                    if (this.current_scale - ((double) 1 / 100 - scale / 100) >= 1 / (double) this.get_content_width ()) {
+                        this.current_scale -= ((double) 1 / 100 - scale / 100);
+                    }
+                    print ("scale: %f\n", this.current_scale);
+                } else {
+                    this.current_scale = 1 / (double) this.get_content_width ();
+                }
+                this.queue_draw ();
+            });
+
             this.add_controller (this.move_gesture);
+            this.add_controller (this.zoom_gesture);
         }
 
         public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            calculate_min_max_x ();
             draw_grid (drawing_area, cairo, width, height);
 
             cairo.set_line_width (1.0);
@@ -77,7 +96,6 @@ namespace Quarry {
         }
 
         private void draw_grid (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-
             cairo.set_line_width (0.5);
 
             draw_line (cairo, this.center.x, 0, this.center.x, height);
@@ -86,14 +104,14 @@ namespace Quarry {
             cairo.set_line_width (0.1);
             cairo.set_source_rgb (0.5, 0.5, 0.5);
 
-            double step = calculate_grid_step (width);
+            double step = calculate_grid_step ((int) (width * current_scale));
 
-            for (double i = this.center.x, j = this.center.y; (i.abs () > 0 && i.abs () < width) || (j.abs () > 0 && j.abs () < height); i += step, j -= step) {
-                if (i.abs () > 0 && i.abs () < width) {
+            for (double i = this.center.x, j = this.center.y; (i.abs () > 0 && i < width || i.abs () < 0 && i > -width) || (j > 0 && j < height.abs () || j < 0 && j > -height.abs ()); i += step, j -= step) {
+                if (i > 0 && i < width || i < 0 && i > -width) {
                     draw_line (cairo, i, 0, i, height);
                     draw_line (cairo, 2 * this.center.x - i, 0, 2 * this.center.x - i, height);
                 }
-                if (j.abs () > 0 && j.abs () < height) {
+                if (j > 0 && j < height.abs () || j < 0 && j > -height.abs ()) {
                     draw_line (cairo, 0, j, width, j);
                     draw_line (cairo, 0, 2 * this.center.y - j, width, 2 * this.center.y - j);
                 }
@@ -105,7 +123,7 @@ namespace Quarry {
             cairo.move_to (calculate_x_coordinate (series_item.points.first ().x, width), calculate_y_coordinate (series_item.points.first ().y));
 
             foreach (var point in series_item.points) {
-                cairo.line_to (calculate_x_coordinate (point.x, width), calculate_y_coordinate (point.y));
+                cairo.line_to (calculate_x_coordinate (point.x, (int) (width * current_scale)), calculate_y_coordinate (point.y));
             }
 
             cairo.stroke ();
@@ -132,8 +150,12 @@ namespace Quarry {
         private double calculate_grid_step (int width) {
             double step = 60 / ((double) (this.max_x - this.min_x).abs () / (double) width.abs ());
 
-            while (step < 10) {
-                step *= 10;
+            while (step < 10 || step > 120) {
+                if (step < 10) {
+                    step *= 10;
+                } else if (step > 120) {
+                    step /= 10;
+                }
             }
 
             return step;

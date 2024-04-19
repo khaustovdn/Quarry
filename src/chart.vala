@@ -22,6 +22,8 @@ namespace Quarry {
     public class Chart : Gtk.DrawingArea {
         public Gee.ArrayList<Series> series { get; construct; }
         public Point center { get; set; }
+        public Gtk.GestureDrag move_gesture;
+        public Point current_position;
 
         public int min_x { private get; set; }
         public int max_x { private get; set; }
@@ -33,21 +35,38 @@ namespace Quarry {
         construct {
             this.series = new Gee.ArrayList<Series> ();
 
-            this.width_request = 360;
-            this.height_request = 294;
+            this.content_width = 360;
+            this.content_height = 294;
 
             this.margin_bottom = 18;
             this.margin_top = 18;
             this.margin_start = 12;
             this.margin_end = 12;
 
+            this.min_x = -this.get_content_width () / 16; this.max_x = this.get_content_width ();
+            this.calculate_center (this.get_content_width (), this.get_content_height ());
+
             this.set_draw_func (draw);
+
+            this.move_gesture = new Gtk.GestureDrag ();
+
+            this.move_gesture.drag_update.connect ((_, x_pos, y_pos) => {
+                var move_x = center.x + ((x_pos - this.current_position.x > 0) ? 1 : -1) * (int) (x_pos - this.current_position.x).abs ();
+                var move_y = center.y + ((y_pos - this.current_position.y > 0) ? 1 : -1) * (int) (y_pos - this.current_position.y).abs ();
+                center = new Point ((int) move_x, (int) move_y);
+                this.current_position = new Point ((int) x_pos, (int) y_pos);
+                this.queue_draw ();
+            });
+
+            this.move_gesture.drag_end.connect ((_, x, y) => {
+                this.current_position = new Point (0, 0);
+            });
+
+            this.add_controller (this.move_gesture);
         }
 
         public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            this.min_x = -width / 16; this.max_x = width;
             calculate_min_max_x ();
-            calculate_center (width, height);
             draw_grid (drawing_area, cairo, width, height);
 
             cairo.set_line_width (1.0);
@@ -58,6 +77,7 @@ namespace Quarry {
         }
 
         private void draw_grid (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+
             cairo.set_line_width (0.5);
 
             draw_line (cairo, this.center.x, 0, this.center.x, height);

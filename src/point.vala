@@ -20,11 +20,11 @@
 
 namespace Quarry {
     public class Point : Object {
-        public int x { get; construct; }
-        public int y { get; construct; }
+        public double x { get; construct; }
+        public double y { get; construct; }
 
-        public Point (int x, int y) {
-            Object (x: x, y: y);
+        public Point (double offset_x, double offset_y) {
+            Object (x: offset_x, y: offset_y);
         }
     }
 }

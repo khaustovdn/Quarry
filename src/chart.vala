@@ -88,7 +88,7 @@ namespace Quarry {
             cairo.set_line_width (1.0);
 
             foreach (var series_item in this.series) {
-                draw_series (cairo, series_item, width);
+                draw_series (cairo, series_item, width, height);
             }
         }
 
@@ -101,41 +101,43 @@ namespace Quarry {
             cairo.set_line_width (0.1);
             cairo.set_source_rgb (0.5, 0.5, 0.5);
 
-            int step = calculate_grid_step ();
+            double step = calculate_grid_step ();
 
             if (this.center.x < width) {
-                for (int i = this.center.x; i < width; i += (int) step) {
+                for (double i = this.center.x; i < width; i += step) {
                     if (i < 0)continue;
                     draw_line (cairo, i, 0, i, height);
                 }
             }
             if ((this.center.x > 0)) {
-                for (int i = this.center.x; i > 0; i -= (int) step) {
+                for (double i = this.center.x; i > 0; i -= step) {
                     if (i > width)continue;
                     draw_line (cairo, i, 0, i, height);
                 }
             }
 
             if (this.center.y < height) {
-                for (int i = this.center.y; i < height; i += (int) step) {
+                for (double i = this.center.y; i < height; i += step) {
                     if (i < 0)continue;
                     draw_line (cairo, 0, i, width, i);
                 }
             }
             if ((this.center.y > 0)) {
-                for (int i = this.center.y; i > 0; i -= (int) step) {
+                for (double i = this.center.y; i > 0; i -= step) {
                     if (i > height)continue;
                     draw_line (cairo, 0, i, width, i);
                 }
             }
         }
 
-        private void draw_series (Cairo.Context cairo, Series series_item, int width) {
+        private void draw_series (Cairo.Context cairo, Series series_item, int width, int height) {
             cairo.set_source_rgb (series_item.color.red, series_item.color.green, series_item.color.blue);
-            cairo.move_to (center.x + series_item.points.first ().x / zoom, center.y - series_item.points.first ().y / zoom);
+            cairo.move_to (center.x + series_item.points.first ().x* 10 / zoom, center.y - series_item.points.first ().y* 10 / zoom);
 
             foreach (var point in series_item.points) {
-                cairo.line_to (center.x + point.x / zoom, center.y - point.y / zoom);
+                if (center.x + point.x * 10 / zoom < -width / 2 || center.x + point.x * 10 / zoom > 3 * width / 2)continue;
+                if (center.y - point.y * 10 / zoom < -height / 2 || center.y - point.y * 10 / zoom > 3 * height / 2)continue;
+                cairo.line_to (center.x + point.x * 10 / zoom, center.y - point.y * 10 / zoom);
             }
 
             cairo.stroke ();

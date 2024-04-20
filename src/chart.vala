@@ -74,7 +74,6 @@ namespace Quarry {
                     if (this.current_scale - ((double) 1 / 100 - scale / 100) >= 1 / (double) this.get_content_width ()) {
                         this.current_scale -= ((double) 1 / 100 - scale / 100);
                     }
-                    print ("scale: %f\n", this.current_scale);
                 } else {
                     this.current_scale = 1 / (double) this.get_content_width ();
                 }
@@ -104,16 +103,31 @@ namespace Quarry {
             cairo.set_line_width (0.1);
             cairo.set_source_rgb (0.5, 0.5, 0.5);
 
-            double step = calculate_grid_step ((int) (width * current_scale));
+            int step = calculate_grid_step ((int) (width * current_scale));
 
-            for (double i = this.center.x, j = this.center.y; (i.abs () > 0 && i < width || i.abs () < 0 && i > -width) || (j > 0 && j < height.abs () || j < 0 && j > -height.abs ()); i += step, j -= step) {
-                if (i > 0 && i < width || i < 0 && i > -width) {
+            if (this.center.x < width) {
+                for (int i = this.center.x; i < width; i += step) {
+                    if (i < 0)continue;
                     draw_line (cairo, i, 0, i, height);
-                    draw_line (cairo, 2 * this.center.x - i, 0, 2 * this.center.x - i, height);
                 }
-                if (j > 0 && j < height.abs () || j < 0 && j > -height.abs ()) {
-                    draw_line (cairo, 0, j, width, j);
-                    draw_line (cairo, 0, 2 * this.center.y - j, width, 2 * this.center.y - j);
+            }
+            if ((this.center.x > 0)) {
+                for (int i = this.center.x; i > 0; i -= step) {
+                    if (i > width)continue;
+                    draw_line (cairo, i, 0, i, height);
+                }
+            }
+
+            if (this.center.y < height) {
+                for (int i = this.center.y; i < height; i += step) {
+                    if (i < 0)continue;
+                    draw_line (cairo, 0, i, width, i);
+                }
+            }
+            if ((this.center.y > 0)) {
+                for (int i = this.center.y; i > 0; i -= step) {
+                    if (i > height)continue;
+                    draw_line (cairo, 0, i, width, i);
                 }
             }
         }
@@ -147,7 +161,7 @@ namespace Quarry {
             return this.center.y - (y * 10);
         }
 
-        private double calculate_grid_step (int width) {
+        private int calculate_grid_step (int width) {
             double step = 60 / ((double) (this.max_x - this.min_x).abs () / (double) width.abs ());
 
             while (step < 10 || step > 120) {
@@ -158,7 +172,7 @@ namespace Quarry {
                 }
             }
 
-            return step;
+            return (int) step;
         }
 
         private void calculate_min_max_x () {

@@ -33,9 +33,6 @@ namespace Quarry {
         construct {
             this.series = new Gee.ArrayList<Series> ();
 
-            Point current_position = new Point (0, 0);
-            double current_scale = 1;
-
             this.content_width = 360;
             this.content_height = 294;
 
@@ -44,10 +41,13 @@ namespace Quarry {
             this.margin_start = 12;
             this.margin_end = 12;
 
-            this.center = current_position;
-            this.zoom = current_scale;
+            this.center = new Point (0, 0);
+            this.zoom = 1;
 
             this.set_draw_func (draw);
+
+            Point current_position = this.center;
+            double current_scale = this.zoom;
 
             this.move_gesture = new Gtk.GestureDrag ();
             this.zoom_gesture = new Gtk.GestureZoom ();
@@ -67,6 +67,7 @@ namespace Quarry {
             this.zoom_gesture.scale_changed.connect ((scale) => {
                 var zoom_scale = zoom + (Math.round (current_scale * 1000) / 1000 - scale) * (zoom.abs () * 2);
                 if (zoom_scale > 0) {
+                    this.center = new Point (this.get_content_width () / 2 - (int) ((this.get_content_width () / 2 - center.x) * zoom * (1 / zoom_scale)), this.get_content_height () / 2 - (int) ((this.get_content_height () / 2 - center.y) * zoom * (1 / zoom_scale)));
                     this.zoom = zoom_scale;
                     current_scale = scale;
                     this.queue_draw ();
@@ -131,10 +132,10 @@ namespace Quarry {
 
         private void draw_series (Cairo.Context cairo, Series series_item, int width) {
             cairo.set_source_rgb (series_item.color.red, series_item.color.green, series_item.color.blue);
-            cairo.move_to (center.x + series_item.points.first ().x, center.y - series_item.points.first ().y);
+            cairo.move_to (center.x + series_item.points.first ().x / zoom, center.y - series_item.points.first ().y / zoom);
 
             foreach (var point in series_item.points) {
-                cairo.line_to (center.x + point.x, center.y - point.y);
+                cairo.line_to (center.x + point.x / zoom, center.y - point.y / zoom);
             }
 
             cairo.stroke ();

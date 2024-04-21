@@ -105,29 +105,43 @@ namespace Quarry {
 
             double step = this.calculate_grid_step ();
 
+            cairo.set_font_size (7);
+            char[] buffer = new char[256];
+
+            cairo.move_to (center.x + 8, center.y + 8);
+            cairo.show_text ("0");
+
             if (this.center.x < width) {
-                for (double i = this.center.x; i < width; i += step) {
+                for (double i = this.center.x + step; i < width; i += step) {
                     if (i < 0)continue;
                     this.draw_line (cairo, i, 0, i, height);
+                    cairo.move_to (i - 8, center.y + 8);
+                    cairo.show_text ((Math.round (1000 * (i - center.x) * scale) / 1000).format (buffer, "%g"));
                 }
             }
             if ((this.center.x > 0)) {
-                for (double i = this.center.x; i > 0; i -= step) {
+                for (double i = this.center.x - step; i > 0; i -= step) {
                     if (i > width)continue;
                     this.draw_line (cairo, i, 0, i, height);
+                    cairo.move_to (i - 8, center.y + 8);
+                    cairo.show_text ((Math.round (1000 * (i - center.x) * scale) / 1000).format (buffer, "%g"));
                 }
             }
 
             if (this.center.y < height) {
-                for (double i = this.center.y; i < height; i += step) {
+                for (double i = this.center.y + step; i < height; i += step) {
                     if (i < 0)continue;
                     this.draw_line (cairo, 0, i, width, i);
+                    cairo.move_to (center.x + 8, i + 8);
+                    cairo.show_text ((Math.round (1000 * (-i + center.y) * scale) / 1000).format (buffer, "%g"));
                 }
             }
             if ((this.center.y > 0)) {
-                for (double i = this.center.y; i > 0; i -= step) {
+                for (double i = this.center.y - step; i > 0; i -= step) {
                     if (i > height)continue;
                     this.draw_line (cairo, 0, i, width, i);
+                    cairo.move_to (center.x + 8, i + 8);
+                    cairo.show_text ((Math.round (1000 * (-i + center.y) * scale) / 1000).format (buffer, "%g"));
                 }
             }
         }

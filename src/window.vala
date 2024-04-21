@@ -45,43 +45,42 @@ namespace Quarry {
 
             this.simulate_button.clicked.connect(() => {
                 this.chart.series.clear();
-                simulate.begin(this.chart, (int) this.timer_spin_row.adjustment.value, (obj, res) => {
-                    simulate.end(res);
+                this.simulate.begin(this.chart, (int) this.timer_spin_row.adjustment.value, (obj, res) => {
+                    this.simulate.end(res);
                     this.chart.queue_draw();
                 });
             });
 
-            simulation_listbox.append(this.chart);
+            this.simulation_listbox.append(this.chart);
         }
 
         public async void simulate(Chart chart, int timer) {
-            initialize();
+            this.initialize();
 
             Series crusher_queue_series = new Series(new Color(0.4, 0.8, 0.5));
             Series excavators_queue_series = new Series(new Color(0.8, 0.4, 0.5));
 
             for (int i = 0; i < timer * 60; i++) {
-                update();
+                this.update();
 
-                int excavators_queue = calculate_excavators_queue();
-                excavators_queue_series.points.add(new Point(i, excavators_queue));
-                crusher_queue_series.points.add(new Point(i, this.crusher.truck_list.size));
+                excavators_queue_series.points.add(new Point(i / 60, this.calculate_excavators_queue()));
+                crusher_queue_series.points.add(new Point(i / 60, this.crusher.truck_list.size));
 
-                Idle.add(simulate.callback);
+                Idle.add(this.simulate.callback);
                 yield;
             }
 
-            clear();
+            this.clear();
 
-            chart.series.add(crusher_queue_series);
-            chart.series.add(excavators_queue_series);
+            this.chart.series.add(crusher_queue_series);
+            this.chart.series.add(excavators_queue_series);
         }
 
         private void initialize() {
             for (int i = 0; i < 3; i++) {
                 Excavator excavator = new Excavator(0, new Gee.ArrayList<DumpTruck> ());
                 this.excavator_list.add(excavator);
-
+                
                 for (int j = 0; j < 3; j++) {
                     int tonnage = (j == 0) ? 50 : 20;
                     DumpTruck truck = new DumpTruck(Load.UNLOADED, 0, tonnage, excavator, this.crusher);

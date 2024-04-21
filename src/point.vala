@@ -23,8 +23,8 @@ namespace Quarry {
         public double x { get; construct; }
         public double y { get; construct; }
 
-        public Point (double offset_x, double offset_y) {
-            Object (x: offset_x, y: offset_y);
+        public Point (double x, double y) {
+            Object (x: x, y: y);
         }
     }
 }

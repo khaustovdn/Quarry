@@ -30,5 +30,19 @@ namespace Quarry {
         construct {
             this.points = new Gee.ArrayList<Point> ();
         }
+
+        public void draw_series (Cairo.Context cairo, Point center, double scale, int width, int height) {
+            cairo.set_line_width (1.0);
+            cairo.set_source_rgb (this.color.red, this.color.green, this.color.blue);
+
+            cairo.move_to (center.x + this.points.first ().x* 10 / scale, center.y - this.points.first ().y* 10 / scale);
+            foreach (var point in this.points) {
+                if (center.x + point.x * 10 / scale < -width / 2 || center.x + point.x * 10 / scale > 3 * width / 2)continue;
+                if (center.y - point.y * 10 / scale < -height / 2 || center.y - point.y * 10 / scale > 3 * height / 2)continue;
+                cairo.line_to (center.x + point.x * 10 / scale, center.y - point.y * 10 / scale);
+            }
+
+            cairo.stroke ();
+        }
     }
 }

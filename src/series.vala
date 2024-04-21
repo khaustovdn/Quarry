@@ -31,7 +31,7 @@ namespace Quarry {
             this.points = new Gee.ArrayList<Point> ();
         }
 
-        public void draw_series (Cairo.Context cairo, Point center, double scale, int width, int height) {
+        public void draw (Cairo.Context cairo, Point center, double scale, int width, int height) {
             cairo.set_line_width (1.0);
             cairo.set_source_rgb (this.color.red, this.color.green, this.color.blue);
 

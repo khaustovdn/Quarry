@@ -21,10 +21,11 @@
 namespace Quarry {
     public class Chart : Gtk.DrawingArea {
         public Gee.ArrayList<Series> series { get; construct; }
-        public Point center { get; set; }
-        public double scale { get; set; }
-        public Gtk.GestureDrag move_gesture;
-        public Gtk.GestureZoom scale_gesture;
+        private Grid grid { get; set; }
+        private Point center { get; set; }
+        private double scale { get; set; }
+        private Gtk.GestureDrag move_gesture;
+        private Gtk.GestureZoom scale_gesture;
 
         public Chart () {
             Object ();
@@ -32,6 +33,7 @@ namespace Quarry {
 
         construct {
             this.series = new Gee.ArrayList<Series> ();
+            this.grid = new Grid ();
 
             this.content_width = 360;
             this.content_height = 294;
@@ -87,83 +89,11 @@ namespace Quarry {
         }
 
         private void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            this.draw_grid (drawing_area, cairo, width, height);
+            this.grid.draw (this.center, this.scale, cairo, width, height);
 
             foreach (var series_item in this.series) {
-                series_item.draw_series (cairo, this.center, this.scale, width, height);
+                series_item.draw (cairo, this.center, this.scale, width, height);
             }
-        }
-
-        private void draw_grid (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            cairo.set_line_width (1.0);
-
-            this.draw_line (cairo, this.center.x, 0, this.center.x, height);
-            this.draw_line (cairo, 0, this.center.y, width, this.center.y);
-
-            cairo.set_line_width (0.1);
-            cairo.set_source_rgb (0.5, 0.5, 0.5);
-
-            double step = this.calculate_grid_step ();
-
-            cairo.set_font_size (7);
-            char[] buffer = new char[256];
-
-            cairo.move_to (center.x + 8, center.y + 8);
-            cairo.show_text ("0");
-
-            if (this.center.x < width) {
-                for (double i = this.center.x + step; i < width; i += step) {
-                    if (i < 0)continue;
-                    this.draw_line (cairo, i, 0, i, height);
-                    cairo.move_to (i - 8, center.y + 8);
-                    cairo.show_text ((Math.round (1000 * (i - center.x) * scale) / 1000).format (buffer, "%g"));
-                }
-            }
-            if ((this.center.x > 0)) {
-                for (double i = this.center.x - step; i > 0; i -= step) {
-                    if (i > width)continue;
-                    this.draw_line (cairo, i, 0, i, height);
-                    cairo.move_to (i - 8, center.y + 8);
-                    cairo.show_text ((Math.round (1000 * (i - center.x) * scale) / 1000).format (buffer, "%g"));
-                }
-            }
-
-            if (this.center.y < height) {
-                for (double i = this.center.y + step; i < height; i += step) {
-                    if (i < 0)continue;
-                    this.draw_line (cairo, 0, i, width, i);
-                    cairo.move_to (center.x + 8, i + 8);
-                    cairo.show_text ((Math.round (1000 * (-i + center.y) * scale) / 1000).format (buffer, "%g"));
-                }
-            }
-            if ((this.center.y > 0)) {
-                for (double i = this.center.y - step; i > 0; i -= step) {
-                    if (i > height)continue;
-                    this.draw_line (cairo, 0, i, width, i);
-                    cairo.move_to (center.x + 8, i + 8);
-                    cairo.show_text ((Math.round (1000 * (-i + center.y) * scale) / 1000).format (buffer, "%g"));
-                }
-            }
-        }
-
-        private void draw_line (Cairo.Context cairo, double x1, double y1, double x2, double y2) {
-            cairo.move_to (x1, y1);
-            cairo.line_to (x2, y2);
-            cairo.stroke ();
-        }
-
-        private double calculate_grid_step () {
-            double result = 10 / this.scale;
-
-            while (true) {
-                if (result < 10)
-                    result *= 10;
-                else if (result > 120)
-                    result /= 10;
-                else break;
-            }
-
-            return result;
         }
     }
 }

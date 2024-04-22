@@ -38,23 +38,27 @@ namespace Quarry {
             cairo.set_font_size (7);
             char[] buffer = new char[256];
 
-            cairo.move_to (center.x + 8, center.y + 8);
+            cairo.move_to (center.x - 8, center.y + 12);
             cairo.show_text ("0");
 
             if (center.x < width) {
                 for (double i = center.x + step; i < width; i += step) {
                     if (i < 0)continue;
                     this.draw_line (cairo, i, 0, i, height);
-                    cairo.move_to (i - 8, center.y + 8);
-                    cairo.show_text ((Math.round (1000 * (i - center.x) * scale) / 1000).format (buffer, "%g"));
+                    if (step < 40 && (Math.round ((i - center.x).abs () / step)) % 2 == 0)continue;
+                    string value = ((i - center.x) * scale).format (buffer, "%g");
+                    cairo.move_to (i - value.length - 8, center.y + 12);
+                    cairo.show_text (value);
                 }
             }
             if (center.x > 0) {
                 for (double i = center.x - step; i > 0; i -= step) {
                     if (i > width)continue;
                     this.draw_line (cairo, i, 0, i, height);
-                    cairo.move_to (i - 8, center.y + 8);
-                    cairo.show_text ((Math.round (1000 * (i - center.x) * scale) / 1000).format (buffer, "%g"));
+                    if (step < 40 && (Math.round ((i - center.x).abs () / step)) % 2 == 0)continue;
+                    string value = ((i - center.x) * scale).format (buffer, "%g");
+                    cairo.move_to (i - (value.length - 1) * Math.PI - 8, center.y + 12);
+                    cairo.show_text (value);
                 }
             }
 
@@ -62,16 +66,18 @@ namespace Quarry {
                 for (double i = center.y + step; i < height; i += step) {
                     if (i < 0)continue;
                     this.draw_line (cairo, 0, i, width, i);
-                    cairo.move_to (center.x + 8, i + 8);
-                    cairo.show_text ((Math.round (1000 * (-i + center.y) * scale) / 1000).format (buffer, "%g"));
+                    string value = ((-i + center.y) * scale).format (buffer, "%g");
+                    cairo.move_to (center.x - (value.length - 1) * Math.PI - 12, i + 8);
+                    cairo.show_text (value);
                 }
             }
             if ((center.y > 0)) {
                 for (double i = center.y - step; i > 0; i -= step) {
                     if (i > height)continue;
                     this.draw_line (cairo, 0, i, width, i);
-                    cairo.move_to (center.x + 8, i + 8);
-                    cairo.show_text ((Math.round (1000 * (-i + center.y) * scale) / 1000).format (buffer, "%g"));
+                    string value = ((-i + center.y) * scale).format (buffer, "%g");
+                    cairo.move_to (center.x - (value.length - 1) * Math.PI - 12, i + 8);
+                    cairo.show_text (value);
                 }
             }
         }
@@ -86,9 +92,9 @@ namespace Quarry {
             double result = 10 / scale;
 
             while (true) {
-                if (result < 10)
+                if (result < 20)
                     result *= 10;
-                else if (result > 120)
+                else if (result > 240)
                     result /= 10;
                 else break;
             }
